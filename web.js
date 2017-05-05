@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var app = express();
 app.set('port',process.env.PORT || 3000);
 app.get('/',function(req,res){
@@ -8,7 +8,7 @@ app.get('/',function(req,res){
 });
 app.get('/about',function(req,res){
 		res.type('text/plain');
-		res.send('hello about');
+		res.send('hello about page');
 });
 app.use(function(req,res){
 	console.log('404 err');
