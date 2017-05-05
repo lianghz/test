@@ -8,7 +8,7 @@ app.get('/',function(req,res){
 });
 app.get('/about',function(req,res){
 		res.type('text/plain');
-		res.send('hello about page');
+		res.send('hello about page 20170505');
 });
 app.use(function(req,res){
 	console.log('404 err');
