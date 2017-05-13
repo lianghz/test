@@ -1,4 +1,6 @@
 ﻿var express = require('express');
+var handlebars = require('handlebars').create({ defaultLayout:'main' });
+
 var app = express();
 app.set('port',process.env.PORT || 3000);
 app.get('/',function(req,res){
