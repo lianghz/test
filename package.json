@@ -10,9 +10,11 @@
     "formidable": "^1.1.1",
     "handlebars": "^4.0.8",
     "mongoose": "^4.9.7",
+    "node-xlsx": "^0.7.4",
     "q": "^1.5.0",
+    "underscore": "^1.8.3",
     "xlsjs": "^0.7.6",
-    "xlsx": "^0.9.13"
+    "xlsx": "^0.10.1"
   },
   "devDependencies": {},
   "scripts": {

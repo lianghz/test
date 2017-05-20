@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/easyui/themes/color.css">
     <script type="text/javascript" src="/easyui/jquery.min.js"></script>
     <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/easyui/locale/easyui-lang-zh_CN.js"></script>
 </head>
 
 <body style="margin:0px" class="easyui-layout" id="main-layout">
@@ -37,14 +38,13 @@
                             <li>
                                 <span>数据上传</span>
                                 <ul>
-                                    <li>售点协议</li>
-                                    <li>销量数据</li>
-                                    <li data-options="url:'/checkresult'">检查结果</li>
+                                    <li data-options="url:'/outletgrid'">1.客户资料维护</li>
+                                    <li data-options="url:'/setargeementgrid'">1.售点协议设置</li>
+                                    <li data-options="url:'/salesgrid'">1.MM销量维护</li>
+                                    <li data-options="url:'/checkresult'">1.检查结果维护</li>
                                 </ul>
                             </li>
-                            <li>
-                                <span>计算结果</span>
-                            </li>
+                            <li data-options="url:'/calcresultgrid'">计算结果</li>
                         </ul>
                     </li>
                     <li data-options="state:'closed'">
@@ -53,6 +53,7 @@
                             <li>
                                 <span>数据上传</span>
                                 <ul>
+                                    <li>客户资料维护</li>
                                     <li>售点协议</li>
                                     <li>销量数据</li>
                                     <li>检查结果</li>
