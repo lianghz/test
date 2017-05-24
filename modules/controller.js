@@ -148,9 +148,9 @@ function calcResultGetData(req, res) {
 }
 
 function calcResultGetGrid(req, res) {
-    calcResult.getGrid(function (docs) {
+    calcResult.getGrid(function (docs,docs2) {
         //console.log("d1=" + docs);
-        res.render('calcResult', { layout: null, params: docs });
+        res.render('calcResult', { layout: null, params: docs,params2:docs2 });
     });
 }
 

@@ -35,9 +35,9 @@ function saveData(resultDocs) {
 }
 ///获取检查结果的grid表头格式
 function getGrid(cb) {
-    params.paramDb("agreements", "calcResultGrid", function (result) {
+    params.paramDb("agreements", "calcResultGrid", function (result,result2) {
         // console.log("rs="+result);
-        cb(result);
+        cb(result,result2);
     });
 }
 

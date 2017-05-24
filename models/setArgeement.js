@@ -9,7 +9,7 @@ function saveData(docs) {
     // console.log('saveData='+docs)
     params.paramDb("agreements", "setAgreement", function (result) {
         SchemaParams = eval("(" + result + ")");
-        console.log('saveData=' + result);
+        // console.log('saveData=' + result);
         schema.add(SchemaParams);
         var dataModel = mongoose.model('setAgreement', schema);//(文档，schema)定义了一个model
         docs.forEach(function (doc) {//把键值的非法字符.转全角．

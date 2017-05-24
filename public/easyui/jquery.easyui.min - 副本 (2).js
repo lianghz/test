@@ -9214,13 +9214,13 @@ dc.view.height(dc.view2.height());
 dc.body2.triggerHandler("scroll");
 function _674(trs1,trs2){
 for(var i=0;i<trs2.length;i++){
-// var tr1=$(trs1[i]);
-// var tr2=$(trs2[i]);
-// tr1.css("height","");
-// tr2.css("height","");
-// var _67a=Math.max(tr1.height(),tr2.height());
-// tr1.css("height",_67a);
-// tr2.css("height",_67a);
+var tr1=$(trs1[i]);
+var tr2=$(trs2[i]);
+tr1.css("height","");
+tr2.css("height","");
+var _67a=Math.max(tr1.height(),tr2.height());
+tr1.css("height",_67a);
+tr2.css("height",_67a);
 }
 };
 function _678(cc){

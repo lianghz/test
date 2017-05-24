@@ -1,7 +1,10 @@
 ///检查结果数据处理
 
 var params = require("../modules/params.js");
+var tempColl = require("./tempCollection.js");
 var mongoose = require('mongoose');
+var Q = require('q');
+
 var SchemaParams;
 var CheckResultSchema = mongoose.Schema();
 
@@ -11,7 +14,9 @@ function saveResult(resultDocs) {
         SchemaParams = eval("(" + result + ")");
         CheckResultSchema.add(SchemaParams);
         var checkResult = mongoose.model('CheckResult', CheckResultSchema);//(文档，schema)定义了一个model
-        resultDocs.forEach(function (resultDoc) {
+        //var promises = resultDocs.forEach(function (resultDoc) {
+        var promises = resultDocs.map(function (resultDoc) {
+            // console.log('resultDoc='+JSON.stringify(resultDoc));
             for (var key in resultDoc) {
                 if (key.indexOf(".") > 0) {
                     key2 = key.replace(".", "．");
@@ -19,14 +24,23 @@ function saveResult(resultDocs) {
                 }
             }
             //resultDoc = resultDoc.replace(".", "/.");
-            checkResult.update({ 'SAP售点': resultDoc.SAP售点 },
-                resultDoc,
-                { upsert: true },
-                function (err, docs) {
-                    if (err) {
-                        console.error(err.stack);
-                    }
-                });
+            return Q.Promise(function (resolve, reject) {
+                checkResult.update({ 'SAP售点': resultDoc.SAP售点 },
+                    resultDoc,
+                    { upsert: true },
+                    function (err, docs) {
+                        if (err) {
+                            console.error(err.stack);
+                        };
+                        resolve();
+                    });
+            })
+        });
+        Q.all(promises).then(function () {
+            // console.log('ppp=')
+            tempColl.createTempOutlet(function (msg) {
+
+            })
         });
     });
 }
