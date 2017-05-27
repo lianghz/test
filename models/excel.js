@@ -15,17 +15,7 @@ function jsonToExcel(jsonData, fileName, cb) {
     // console.log("fff="+excelField);
     // console.log("rrr="+result);
     var header = eval("(" + jsonData.excelHeader + ")");
-    var data_content = [header];
-
-    // jsonData.docs.forEach(function (element) {
-    //     var arryStr = "";
-    //     for (var i = 0; i < header.length; i++) {
-    //         arryStr += '"' + (element[header[i]] ? element[header[i]] : "") + '",';
-    //     }
-    //     var arry = eval("([" + arryStr + "])");
-    //     data_content.push(arry);
-    // });
-    
+    var data_content = [header];   
     var elements = jsonData.docs;
     for (var key in elements) {//这里in是得到key，而不是值，差点入坑了。
         var arryStr="";

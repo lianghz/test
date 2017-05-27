@@ -7,8 +7,8 @@ var schema = mongoose.Schema();
 ///获取grid表头格式
 function getGrid(cb) {
     params.paramNoDb("versionsGrid", function (result) {
-        params.paramDb('agreements','calcResultGrid', function (result2,result3) {
-            cb(result, result2,result3);
+        params.paramDb('agreements', 'calcResultGrid', function (result2, result3) {
+            cb(result, result2, result3);
         })
     });
 }
@@ -51,33 +51,43 @@ function getData(req, res, cb) {
 function getDataHistory(req, res, cb) {
     var period = req.query.period;
     var vno = req.query.vno;
+    var loc = req.query.loc;
+    var outlet = req.query.outlet;
+    var name = req.query.name;
     var condition = "";
-    if (period) {
+    // if (period) {
+    //     if (condition) condition += ","
+    //     condition += "'周期':'" + period + "'";
+    // }
+    // if (vno) {
+    //     if (condition) condition += ","
+    //     condition += "'版本':'" + vno + "'";
+    // }
+    if (loc) {
         if (condition) condition += ","
-        condition += "'周期':'" + period + "'";
+        condition += "'办事处':/" + loc + "/";
     }
-    if (vno) {
+    if (outlet) {
         if (condition) condition += ","
-        condition += "'版本':'" + vno + "'";
+        condition += "'考核销量售点':/" + outlet + "/";
+    }
+    if (name) {
+        if (condition) condition += ","
+        condition += "'客户名称':/" + name + "/";
     }
     var collection = 'nonka' + 201705 + 'v' + vno;
 
-    console.log("col=" + collection);
-    // condition = eval("({" + condition + "})");
+    // console.log("col=" + condition);
+    condition = eval("({" + condition + "})");
     params.paramNoDb("calcResult", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
         var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
-        dataModel.count(condition, function (err, count) {
-            var total = count;
-            // console.log("c="+count);
             dataModel.find(condition, function (err, docs) {
                 var totalDocs = JSON.stringify(docs)//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
-                console.log("c="+totalDocs);
+                // console.log("c=" + totalDocs);
                 cb(totalDocs);
             })
-        });
-
     });
 }
 

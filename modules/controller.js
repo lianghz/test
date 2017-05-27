@@ -171,11 +171,12 @@ function checkVersion(req, res) {
         res.send(msg);
     });
 }
-///======================================
+
+///history======================================
 function versionsDataToExcel(req, res) {
     history.getDataForExcel(req, res, function (docs) {
         var now = new Date();
-        var fileName = "MM销量" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        var fileName = "版本信息" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
