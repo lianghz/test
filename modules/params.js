@@ -12,13 +12,16 @@ var setAgreement = ["SAP售点", "数据类型"];
 var calcResultFrozen = ["办事处", "考核销量售点", "SAP售点"];
 var calcResult1 = ["客户名称", "客户", "DME发放协议号", "协议名称", "协议号费用周期", "费用时间段", "发放频率", "销量目标/元/月", "折扣/月/元", "费用合计", "核对结果", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
 var calcResult2 = ["实际收入（元）", "计算结果（元）（不含销量考核）", "合计目标收入", "合计实际收入", "计算结果合计（包含销量考核）", "备注"];
+var versions = ["周期", "版本","描述" ,"保存时间", "修改时间", "操作人", "状态"]
 
 function formatTitle(arrs) {
-  return '{"' + arrs.join('":String,"') + '":String}';
+  var titleStr = '{"' + arrs.join('":String,"') + '":String}';
+  return titleStr.replace('.', '．');
 }
 
 function formatParams(arrs) {
-  return '{"' + arrs.join('":"0","') + '":"0"}';
+  var titleStr = '{"' + arrs.join('":"0","') + '":"0"}';
+  return titleStr.replace('.', '．');
 }
 
 //[{filed:A,title:A},{filed:B,title:B,rowspan:2},{title:c,colspan:4}... ...]
@@ -33,14 +36,16 @@ function formatTitleGrid(arrs, fieldPrefix, rowspan, colspan, ww) {
     i++;
 
     iv = (i == 0) ? "" : i;
-    if (elm == '客户名称') {
+    if (elm == '客户名称' || elm=='描述') {
       w = "width:300";
     } else if (elm.slice(0, 1) == 'P' && elm.length < 4) {
       w = "width:50";
-    } else if (elm == 'SAP售点' || elm == 'MM售点' || elm == '数据类型' ||elm=='客户') {
+    } else if (elm == 'SAP售点' || elm == 'MM售点' || elm == '数据类型' || elm == '客户' || elm == '周期') {
       w = "width:100";
-    }else{
-      w="width:"+(elm.length*15+15);
+    } else if (elm == '保存时间' || elm == '修改时间') {
+      w = "width:200";
+    } else {
+      w = "width:" + (elm.length * 15 + 15);
     }
 
     // console.log('w=' + w);
@@ -87,6 +92,18 @@ function paramNoDb(resultName, cb) {
     case 'salesExcel':
       paramsString = formatTitleExcel(mmsales);
       break;
+    case 'versions':
+      paramsString = formatTitle(versions);
+      break;
+    case 'versionsGrid':
+      paramsString = formatTitleGrid(versions);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'versionsExcel':
+      paramsString = formatTitleExcel(versions);
+      break;
+
     default:
       paramsString = "";
       break;

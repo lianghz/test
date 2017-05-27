@@ -8,12 +8,12 @@
     <link rel="stylesheet" type="text/css" href="/easyui/ui-sunny/easyui.css">
     <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
     <link rel="stylesheet" type="text/css" href="/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     <script type="text/javascript" src="/easyui/jquery.min.js"></script>
     <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="/easyui/locale/easyui-lang-zh_CN.js"></script>
-
+    <script type="text/javascript" src="/js/my.js"></script>
     <script>
-        {{!--var xx = getyyyyMMdd();--}}
         /**  
          * 日期格式化（原型扩展或重载）  
          * 格式 YYYY/yyyy/ 表示年份  
@@ -31,8 +31,6 @@
             str = str.replace(/dd|DD/, this.getDate() > 9 ? this.getDate().toString() : '0' + this.getDate());
             return str;
         }
-        {{!--alert(new Date().format("yyyyMMDD"));--}}
-
     </script>
 </head>
 
@@ -40,6 +38,7 @@
     {{!--
     <div data-options="region:'north'" style="height:50px;background-color: rgb(45, 62, 80);">--}}
         <div data-options="region:'north'" style="height:50px;background-color:#a69e8d;">
+
         </div>
         <div data-options="region:'south'" style="height:30px;text-align: center;">
             <span style="margin-top: 10px;">Copyright © 广东太古可口可乐</span>
@@ -73,7 +72,7 @@
                                     <span>1.2.计算结果</span>
                                     <ul>
                                         <li data-options="url:'/calcresultgrid'">1.2.1.计算返还结果</li>
-                                        <li data-options="url:'/outletgrid'">1.2.2.查看历史结果</li>
+                                        <li data-options="url:'/historygrid'">1.2.2.查看历史结果</li>
                                     </ul>
                                 </li>
                             </ul>

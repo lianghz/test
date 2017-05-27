@@ -1,0 +1,12 @@
+.tb{
+    width:100%;
+    margin:0;
+    padding:5px 4px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+.error-message{
+    margin: 4px 0 0 0;
+    padding: 0;
+    color: red;
+}

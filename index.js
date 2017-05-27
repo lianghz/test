@@ -32,7 +32,7 @@ switch (app.get('env')) {
 
 
 app.set('port', process.env.PORT || 3000);
-
+app.use(require('body-parser')());
 //route
 app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
@@ -156,6 +156,25 @@ app.get('/calcresultview', function (req, res) {
     controller.getCalcResultView(req, res);
 });
 
+app.post('/savenonkaversion', function (req, res) {
+    controller.checkVersion(req, res);
+});
+
+///历史版本
+app.get('/down/history', function (req, res) {
+    controller.versionsDataToExcel(req, res);
+});
+app.get('/historygrid', function (req, res) {
+    controller.versionsGetGrid(req, res);
+});
+app.get('/history', function (req, res) {
+
+    controller.versionsGetData(req, res);
+});
+app.get('/version', function (req, res) {
+
+    controller.versionsGetHistory(req, res);
+});
 
 app.listen(app.get('port'), function () {
     console.log('express started on http://localhost:' + app.get('port'));

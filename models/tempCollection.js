@@ -18,6 +18,7 @@ var checkResultModel = mongoose.model('checkResultOutlet', checkResultSchema, 'c
 
 function createTempOutlet(cb) {
     ///find  
+   
     params.paramNoDb("outlet", function (result) {
         console.log("sm=" + result)
         outletTempSchema.add(eval("(" + result + ")"));

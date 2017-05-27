@@ -6,7 +6,7 @@ var sales = require("../models/sales.js");
 var calcResult = require("../models/calcresult.js");
 // var calcResultView = require("../models/calcresultView.js");
 var calcresultJoin = require('../models/calcresultJoin.js');
-
+var history = require('../models/history.js');
 
 function uploadCheckResult(rse, fileName) {
     var checkResultDocs = jsonObj.ExcelToJson(fileName, "检查结果");
@@ -148,16 +148,58 @@ function calcResultGetData(req, res) {
 }
 
 function calcResultGetGrid(req, res) {
-    calcResult.getGrid(function (docs,docs2) {
+    calcResult.getGrid(function (docs, docs2) {
         //console.log("d1=" + docs);
-        res.render('calcResult', { layout: null, params: docs,params2:docs2 });
+        res.render('calcResult', { layout: null, params: docs, params2: docs2 });
     });
 }
 
 function getCalcResultView(req, res) {
     // CalcresultJoin = new calcresultJoin({});
-    calcresultJoin.getCalcResult(req, res,function(outlets){
+    calcresultJoin.getCalcResult(req, res, function (outlets) {
         res.send(outlets);
+    });
+}
+function saveNonKaVersion(req, res) {
+    // CalcresultJoin = new calcresultJoin({});
+    calcresultJoin.saveNonKaVersion(req, res, function (msg) {
+        res.send(msg);
+    });
+}
+function checkVersion(req, res) {
+    calcresultJoin.checkVersion(req, res, function (msg) {
+        res.send(msg);
+    });
+}
+///======================================
+function versionsDataToExcel(req, res) {
+    history.getDataForExcel(req, res, function (docs) {
+        var now = new Date();
+        var fileName = "MM销量" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
+            res.send(filepath);
+        });
+
+    })
+}
+
+function versionsGetData(req, res) {
+    history.getData(req, res, function (docs) {
+        res.send(docs);
+    });
+}
+
+function versionsGetGrid(req, res) {
+    history.getGrid(function (result,result2,result3) {
+        // console.log("d1=" + result);
+        // console.log("d2=" + result2);
+        res.render('history', { layout: null, params: result,paramsv1:result2,paramsv2: result3});
+    });
+}
+
+function versionsGetHistory(req, res) {
+     history.getDataHistory(req, res, function (docs) {
+        res.send(docs);
     });
 }
 
@@ -181,7 +223,13 @@ var methods = {
     'calcResultDataToExcel': calcResultDataToExcel,
     'calcResultGetData': calcResultGetData,
     'calcResultGetGrid': calcResultGetGrid,
-    'getCalcResultView': getCalcResultView
+    'getCalcResultView': getCalcResultView,
+    'saveNonKaVersion': saveNonKaVersion,
+    'checkVersion': checkVersion,
+    'versionsDataToExcel': versionsDataToExcel,
+    'versionsGetData': versionsGetData,
+    'versionsGetGrid': versionsGetGrid,
+    'versionsGetHistory':versionsGetHistory,
 };
 
 module.exports = methods;
