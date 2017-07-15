@@ -12,7 +12,12 @@ var setAgreement = ["SAP售点", "数据类型"];
 var calcResultFrozen = ["办事处", "考核销量售点", "SAP售点"];
 var calcResult1 = ["客户名称", "客户", "DME发放协议号", "协议名称", "协议号费用周期", "费用时间段", "发放频率", "销量目标/元/月", "折扣/月/元", "费用合计", "核对结果", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
 var calcResult2 = ["实际收入（元）", "计算结果（元）（不含销量考核）", "合计目标收入", "合计实际收入", "计算结果合计（包含销量考核）", "备注"];
-var versions = ["周期", "版本","描述" ,"保存时间", "修改时间", "操作人", "状态"]
+var versions = ["周期", "版本","描述" ,"保存时间", "修改时间", "操作人", "状态"];
+var case2checkresult = ["办事处","售点","名称","冰柜盘点表","下家分销表"];
+var case2outlets = ["办事处","售点","名称","P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12"];
+var case2skus = ["产品代码","产品名称","产品分类"];
+var case2packages = ["序号","产品代码","产品名称"];
+var case2sales = ["办事处","售点","名称","产品代码","产品名称","销量"];
 
 function formatTitle(arrs) {
   var titleStr = '{"' + arrs.join('":String,"') + '":String}';
@@ -103,7 +108,61 @@ function paramNoDb(resultName, cb) {
     case 'versionsExcel':
       paramsString = formatTitleExcel(versions);
       break;
-
+    case 'case2checkresult':
+      paramsString = formatTitle(case2checkresult);
+      break;
+    case 'case2checkresultGrid':
+      paramsString = formatTitleGrid(case2checkresult);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2checkresultExcel'://case2checkresultGrid
+      paramsString = formatTitleExcel(case2checkresult);
+      break;
+    case 'case2outlet':
+      paramsString = formatTitle(case2outlets);
+      break;
+    case 'case2outletGrid':
+      paramsString = formatTitleGrid(case2outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2outletExcel':
+      paramsString = formatTitleExcel(case2outlets);
+      break;
+    case 'case2sku':
+      paramsString = formatTitle(case2skus);
+      break;
+    case 'case2skuGrid':
+      paramsString = formatTitleGrid(case2skus);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2skuExcel':
+      paramsString = formatTitleExcel(case2skus);
+      break;
+   case 'case2sales':
+      paramsString = formatTitle(case2sales);
+      break;
+    case 'case2salesGrid':
+      paramsString = formatTitleGrid(case2sales);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2salesExcel':
+      paramsString = formatTitleExcel(case2sales);
+      break;    
+   case 'case2package':
+      paramsString = formatTitle(case2packages);
+      break;
+    case 'case2packageGrid':
+      paramsString = formatTitleGrid(case2packages);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2packageExcel':
+      paramsString = formatTitleExcel(case2packages);
+      break;           
     default:
       paramsString = "";
       break;
@@ -185,6 +244,7 @@ function paramDb(parameterName, resultName, cb) {
         case 'calcResultExcel':
           var arrs = setAgreement.concat(element.params);
           paramsString = formatTitleExcel(arrs);
+          console.log('3333='+paramsString)
           break;
         default:
           paramsString = "{'" + paramsString + "':String}";

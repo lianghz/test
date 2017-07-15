@@ -3,7 +3,7 @@
 <div id="sales-tbr">
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#sales-dlg').dialog('open')">上传结果</a>
     <a id="sales-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
-    <a id="sales-btn-del" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>
+    {{!--<a id="sales-btn-del" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
     <input id="sales-txt-bu" style="width:90px;height:25px">
     <input id="sales-txt-loc" style="width:120px;height:25px">
     <input id="sales-txt-outlet" style="width:120px;height:25px">
@@ -33,6 +33,7 @@
             <tr>
                 <td><input name="filename" class="f1 easyui-filebox"></input>
                 </td>
+                <td>　　先删除原数据</td><td><input name="cbrm" type="checkbox"></td>
             </tr>
         </table>
     </form>
