@@ -349,11 +349,11 @@ function getDataForExcel(req, res, cb) {
     condition = eval("({" + condition + "})");
     checkOutlets = {};
 
-    params.paramDb("agreements", "calcResultExcel", function (result) {
-        var excelHeader;
+    params.paramDb("agreements", "calcResultExcel", function (result,result2,result3) {
+        var excelHeader,excelHeader2,argmentList;
         excelHeader = result;
-        
-    console.log("22222="+condition);
+        excelHeader2 = result2;
+        argmentList = result3;
         outletModel.find(condition, function (err, outlets) {
             var docs = [];
             var rowId = 0;
@@ -411,7 +411,8 @@ function getDataForExcel(req, res, cb) {
                 // var totalDocs = "{\"total\":" + total + ",\"rows\":" + JSON.stringify(docs) + "}"
                 //var totalDocs = JSON.stringify(docs);
                 //cb(totalDocs);
-                 cb({ "excelHeader": excelHeader, "docs": docs });
+                // console.log('eee'+excelHeader2);
+                 cb({ "excelHeader": excelHeader,"excelHeader2": excelHeader2,"argmentList": argmentList, "docs": docs });
             });
         }).select('-_id -__v').sort({ '考核销量售点': 1 });
     });

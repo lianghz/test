@@ -12,12 +12,12 @@ var setAgreement = ["SAP售点", "数据类型"];
 var calcResultFrozen = ["办事处", "考核销量售点", "SAP售点"];
 var calcResult1 = ["客户名称", "客户", "DME发放协议号", "协议名称", "协议号费用周期", "费用时间段", "发放频率", "销量目标/元/月", "折扣/月/元", "费用合计", "核对结果", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
 var calcResult2 = ["实际收入（元）", "计算结果（元）（不含销量考核）", "合计目标收入", "合计实际收入", "计算结果合计（包含销量考核）", "备注"];
-var versions = ["周期", "版本","描述" ,"保存时间", "修改时间", "操作人", "状态"];
-var case2checkresult = ["办事处","售点","名称","冰柜盘点表","下家分销表"];
-var case2outlets = ["办事处","售点","名称","P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12"];
-var case2skus = ["产品代码","产品名称","产品分类"];
-var case2packages = ["序号","产品代码","产品名称"];
-var case2sales = ["办事处","售点","名称","产品代码","产品名称","销量"];
+var versions = ["周期", "版本", "描述", "保存时间", "修改时间", "操作人", "状态"];
+var case2checkresult = ["办事处", "售点", "名称", "冰柜盘点表", "下家分销表"];
+var case2outlets = ["办事处", "售点", "名称", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
+var case2skus = ["产品代码", "产品名称", "产品分类"];
+var case2packages = ["序号", "产品代码", "产品名称"];
+var case2sales = ["办事处", "售点", "名称", "产品代码", "产品名称", "销量"];
 
 function formatTitle(arrs) {
   var titleStr = '{"' + arrs.join('":String,"') + '":String}';
@@ -41,7 +41,7 @@ function formatTitleGrid(arrs, fieldPrefix, rowspan, colspan, ww) {
     i++;
 
     iv = (i == 0) ? "" : i;
-    if (elm == '客户名称' || elm=='描述') {
+    if (elm == '客户名称' || elm == '描述') {
       w = "width:300";
     } else if (elm.slice(0, 1) == 'P' && elm.length < 4) {
       w = "width:50";
@@ -68,6 +68,11 @@ function formatTitleExcel(arrs) {
   return paramsString = '["' + paramsString + '"]';
 }
 
+function formatTitleExcel2(arrs) {
+  var paramsString = arrs.join('","');
+  paramsString = paramsString.replace('.', '．')//替换是因为mongodb的key不能是.，目前好像也没有可以转义的方法
+  return paramsString = '"' + paramsString + '"';
+}
 
 function paramNoDb(resultName, cb) {
   var paramsString = "";
@@ -141,7 +146,7 @@ function paramNoDb(resultName, cb) {
     case 'case2skuExcel':
       paramsString = formatTitleExcel(case2skus);
       break;
-   case 'case2sales':
+    case 'case2sales':
       paramsString = formatTitle(case2sales);
       break;
     case 'case2salesGrid':
@@ -151,8 +156,8 @@ function paramNoDb(resultName, cb) {
       break;
     case 'case2salesExcel':
       paramsString = formatTitleExcel(case2sales);
-      break;    
-   case 'case2package':
+      break;
+    case 'case2package':
       paramsString = formatTitle(case2packages);
       break;
     case 'case2packageGrid':
@@ -162,7 +167,7 @@ function paramNoDb(resultName, cb) {
       break;
     case 'case2packageExcel':
       paramsString = formatTitleExcel(case2packages);
-      break;           
+      break;
     default:
       paramsString = "";
       break;
@@ -173,7 +178,7 @@ function paramNoDb(resultName, cb) {
 
 
 function paramDb(parameterName, resultName, cb) {
-  var paramsString, paramsString2;
+  var paramsString, paramsString2, paramsString3;
   var parameters = mongoose.model('param', ppsSchemas);//(表名，schema)定义了一个叫ka的model
   parameters.find({ name: parameterName }, function (err, docs, docs2) {
     if (err) {
@@ -242,15 +247,48 @@ function paramDb(parameterName, resultName, cb) {
           // console.log('paramsGrid10=' + paramsString);
           break;
         case 'calcResultExcel':
+          paramsString = "";
+          var arrs = element.params;//setAgreement.concat(element.params);
+          for (var i = 0; i < calcResultFrozen.length; i++) {
+            paramsString += '"",';
+          }
+          for (var i = 0; i < calcResult1.length; i++) {
+            paramsString += '"",';
+          }
+          for (var i = 0; i < arrs.length; i++) {
+            paramsString += '"生动化目标",';
+          }
+          for (var i = 0; i < arrs.length; i++) {
+            paramsString += '"生动化检查结果",';
+          }
+          for (var i = 0; i < arrs.length; i++) {
+            if (i == arrs.length - 1) {
+              paramsString += '"生动化奖励计算"';
+            }
+            else {
+              paramsString += '"生动化奖励计算",';
+            }
+          }
+          paramsString = '[' + paramsString + ']';
+          paramsString2 = formatTitleExcel2(calcResultFrozen);
+          paramsString2 += ',' + formatTitleExcel2(calcResult1);
+          paramsString2 += ',' + formatTitleExcel2(arrs);
+          paramsString2 += ',' + formatTitleExcel2(arrs);
+          paramsString2 += ',' + formatTitleExcel2(arrs);
+          paramsString2 += ',' + formatTitleExcel2(calcResult2);
+          paramsString2 = '[' + paramsString2 + ']';
+          paramsString3 = formatTitleExcel(arrs);
+          // console.log("ppp="+paramsString3)
+          break;
+        case 'paramsList':
           var arrs = setAgreement.concat(element.params);
           paramsString = formatTitleExcel(arrs);
-          console.log('3333='+paramsString)
           break;
         default:
           paramsString = "{'" + paramsString + "':String}";
           break;
       }
-      cb(paramsString, paramsString2);
+      cb(paramsString, paramsString2, paramsString3);
     });
     return paramsString;
   })

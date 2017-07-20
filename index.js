@@ -134,14 +134,14 @@ app.get('/sales', function (req, res) {
 });
 
 ///calcResult计算结果
-app.post('/upload/calcresult', function (req, res) {
-    var form = new formidable.IncomingForm();
-    form.parse(req, function (err, fields, files) {
-        if (err) return res.redirect(303, '/error');
-        var filepath = files.filename.path;
-        controller.calcResultSaveData(res, filepath);
-    });
-});
+// app.post('/upload/calcresult', function (req, res) {
+//     var form = new formidable.IncomingForm();
+//     form.parse(req, function (err, fields, files) {
+//         if (err) return res.redirect(303, '/error');
+//         var filepath = files.filename.path;
+//         controller.calcResultSaveData(res, filepath);
+//     });
+// });
 app.get('/down/calcresult', function (req, res) {
       controller.calcResultDataToExcel(req, res);
 });

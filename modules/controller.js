@@ -192,7 +192,7 @@ function calcResultDataToExcel(req, res) {
         var now = new Date();
         var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         console.log("fileName="+fileName);
-        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
+        jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
 
@@ -204,7 +204,7 @@ function versionsDataToExcel(req, res) {
     history.getDataForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "版本信息" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
-        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
+        jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
 
