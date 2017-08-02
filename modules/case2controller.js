@@ -6,6 +6,7 @@ var sku = require("../models/case2/sku.js");
 var package = require("../models/case2/package.js");
 var sales = require("../models/case2/sales.js");
 var calcresultJoin = require('../models/case2/calcresultJoin.js');
+var history = require('../models/case2/history.js');
 
 ///--------------------------------------------------------
 ///上传检查结果excel文件，把excel转JSON，把JSON保存到mongodb
@@ -208,7 +209,7 @@ function calcResultDataToExcel(req, res) {
     calcresultJoin.getDataForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
-        console.log("fileName="+fileName);
+        // console.log("fileName="+fileName);
         jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
@@ -216,6 +217,26 @@ function calcResultDataToExcel(req, res) {
     })
 }
 
+//histroy
+function versionsGetGrid(req, res) {
+    history.getGrid(function (result, result2) {
+        // console.log("d1=" + result);
+        // console.log("d2=" + result2);
+        res.render('case2history', { layout: null, params: result, paramsv1: result2 });
+    });
+}
+
+function versionsGetHistory(req, res) {
+    history.getDataHistory(req, res, function (docs) {
+        res.send(docs);
+    });
+}
+
+function versionsGetData(req, res) {
+    history.getData(req, res, function (docs) {
+        res.send(docs);
+    });
+}
 
 //// methods-----------------
 var methods = {
@@ -241,6 +262,10 @@ var methods = {
     'salesGetGrid': salesGetGrid,
     'calcResultGetGrid':calcResultGetGrid,
     'getCalcResultView':getCalcResultView,
+    'checkVersion':checkVersion,
+    'versionsGetGrid':versionsGetGrid,
+    'versionsGetHistory':versionsGetHistory,
+    'versionsGetData':versionsGetData,
 };
 
 module.exports = methods;

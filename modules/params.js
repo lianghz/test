@@ -19,7 +19,7 @@ var case2outlets = ["办事处", "售点", "名称", "P1", "P2", "P3", "P4", "P5
 var case2skus = ["产品代码", "产品名称", "产品分类"];
 var case2packages = ["序号", "产品代码", "产品名称"];
 var case2sales = ["办事处", "售点", "名称", "产品代码", "产品名称", "销量"];
-var case2CalcResult = ["SAP售点","客户名称","SKU","产品类型","常备包装的达成100%","是否提供冰柜盘点表","每个星期是否提供下家分销表","P4目标销量","P4实际销量","销量达成率","折扣标准（元）","返还金额"]
+var case2CalcResult = ["售点","名称","产品编号","产品名称","产品类型","常备包装的达成100%","冰柜盘点表","下家分销表","目标销量","实际销量","销量达成率","折扣标准（元）","返还金额"]
 
 
 function formatTitle(arrs) {
@@ -44,11 +44,11 @@ function formatTitleGrid(arrs, fieldPrefix, rowspan, colspan, ww) {
     i++;
 
     iv = (i == 0) ? "" : i;
-    if (elm == '客户名称' || elm == '描述') {
+    if (elm.indexOf('名称')>-1 || elm == '描述') {
       w = "width:300";
     } else if (elm.slice(0, 1) == 'P' && elm.length < 4) {
       w = "width:50";
-    } else if (elm == 'SAP售点' || elm == 'MM售点' || elm == '数据类型' || elm == '客户' || elm == '周期') {
+    } else if ( elm.indexOf("售点")>-1 || elm == '数据类型' || elm == '客户' || elm == '周期') {
       w = "width:100";
     } else if (elm == '保存时间' || elm == '修改时间') {
       w = "width:200";

@@ -16,7 +16,7 @@ var case2outletTempModel = mongoose.model('case2outlettemp', case2outletTempSche
 var case2checkResultSchema = mongoose.Schema();
 
 case2checkResultSchema.methods.getOutlet = function (cb) {
-    return case2outletModel.find({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb).select('-_id -__v');
+    return case2outletModel.find({ '售点': JSON.parse(JSON.stringify(this))['售点'] }, cb).select('-_id -__v');
 };
 var case2checkResultModel = mongoose.model('case2checkResultOutlet', case2checkResultSchema, 'case2checkresults');
 
@@ -48,7 +48,7 @@ function createTempOutlet(cb) {
                         doc = JSON.parse(JSON.stringify(doc))[0];//格式化doc很重要，一般先JSON.stringify(doc))输出看看格式是怎么样的，发现原来这里是个数组，导致一直保存不了
                         // console.log("doc=" + JSON.stringify(doc))
                         if (doc) {
-                            case2outletTempModel.update({ 'SAP售点': doc['SAP售点'] },
+                            case2outletTempModel.update({ '售点': doc['售点'] },
                                 doc,
                                 { upsert: true },
                                 function (err, doc) {

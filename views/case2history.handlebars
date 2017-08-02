@@ -1,0 +1,276 @@
+<table id="case2-history-dg" title="生动化检查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#case2-history-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+</table>
+<div id="case2-history-tbr">
+    {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case2-history-dlg').dialog('open')">上传结果</a>--}}
+    <a id="case2-history-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    <a id="case2-history-btn-view" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true">查看选择</a>
+    <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span>
+    <input id="case2-history-txt-period" style="width:90px;height:25px">
+    <input id="case2-history-txt-vno" style="width:120px;height:25px">
+    <a id="case2-history-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />
+</div>
+<div id="case2-history-win-tbr">
+    <a id="case2-history-calcresult-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span>
+    <input id="case2-history-txt-loc" style="width:120px;height:25px">
+    <input id="case2-history-txt-outlet" style="width:120px;height:25px">
+    <input id="case2-history-txt-name" style="width:200px;height:25px">
+    <a id="case2-history-win-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"/>
+    <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span>
+</div>
+<input id="case2-history-params" type="hidden" name="referrer" value="{{params}}">
+<input id="case2-history-params-v1" type="hidden" name="referrer" value="{{paramsv1}}">
+<input id="case2-history-params-v2" type="hidden" name="referrer" value="{{paramsv2}}">
+
+<div id="case2-history-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+                closed: true,
+                iconCls: 'icon-save',
+                buttons: [{
+                    text:'上传',
+                    iconCls:'icon-ok',
+                    handler:function(){
+                        $('#case2-history-ff').submit();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        $('#case2-history-dlg').dialog('close')
+                    }
+                }]
+            ">
+    <form id="case2-history-ff" action="/upload/sales" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td><input name="filename" class="f1 easyui-filebox"></input>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="case2-history-win" class="easyui-window" title="Fluid Window" style="width:60%;height:400px;" data-options="modal:true,closed:true,">
+    <table id="case2-history-dg-win" style="width:100%;height:250px;border-top:0px;"  toolbar="#case2-history-win-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+    </table>
+</div>
+
+<script>
+    var params = $('#case2-history-params').val();
+    var paramsv1 = $('#case2-history-params-v1').val();
+    var paramsv2 = $('#case2-history-params-v2').val();
+    //console.log(paramsv1);
+        paramsv1 = paramsv1.replace('[',"")
+    paramsv1 = paramsv1.replace(']',"")
+    var sty = "<span class=\"datagrid-row-expander datagrid-row-expand\" style=\"display:inline-block;width:16px;height:16px;cursor:pointer;\"></span>";
+    var exp = "[{field:'a',title:'　', width:25,formatter: function(value,row,index){return '"+ sty +"'}},"
+    paramsv1 = exp + paramsv1 + "]";
+
+
+    params = eval('[' +params + ']');
+    paramsv1 = eval('[' +paramsv1 + ']');
+    paramsv2 = eval('[' +paramsv2 + ']');
+
+    $('#case2-history-dg').datagrid({
+        url: '/case2/history',
+        pagePosition: 'bottom',
+        pagination: true,
+        rownumbers: true,
+        pageSize: 30,
+        singleSelect: true,
+        columns: params,
+    });
+
+    $('#case2-history-dg-win').datagrid({
+        view: detailview,
+        pagePosition: 'bottom',
+        //rownumbers: true,
+        singleSelect: false,
+        //frozenColumns: paramsv2,
+        columns: paramsv1,
+        rowStyler: function (index, row) {
+            if (row['考核销量售点'] == row['SAP售点']) {
+                return 'color:blue;';
+            }
+        },
+         detailFormatter:function(index,row){
+                    //return '<div class="aaa"></div>';
+                    var mmsales=row.MM销量;
+                    var trStr = "";
+                    for(key in mmsales){
+                        trStr += '<tr class="detailview'+index+'" style="display:none;"><td></td><td></td><td></td>';
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品代码']+'</td>'//SKU
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品名称']+'</td>'//SKU
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品类型']+'</td>'//产品类型
+                        trStr += '<td></td><td></td><td></td><td></td>'
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['销量']+'</td>'//实际销量
+                        trStr += '<td></td>'
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['折扣标准']+'</td>'//折扣标准
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['返还金额']+'</td></tr>'
+                    }
+                    return trStr;
+                },
+        onExpandRow: function(index,row){
+            $(".detailview"+index).prev().hide();
+            $(".detailview"+index).show();
+
+        },
+        onCollapseRow: function(index, row){
+            $(".detailview"+index).hide();
+        }
+    });
+
+    $.extend($.fn.textbox.methods, {
+        addClearBtn: function (jq, iconCls) {
+            return jq.each(function () {
+                var t = $(this);
+                var opts = t.textbox('options');
+                opts.icons = opts.icons || [];
+                opts.icons.unshift({
+                    iconCls: iconCls,
+                    handler: function (e) {
+                        $(e.data.target).textbox('clear').textbox('textbox').focus();
+                        $(this).css('visibility', 'hidden');
+                    }
+                });
+                t.textbox();
+                if (!t.textbox('getText')) {
+                    t.textbox('getIcon', 0).css('visibility', 'hidden');
+                }
+                t.textbox('textbox').bind('keyup', function () {
+                    var icon = t.textbox('getIcon', 0);
+                    if ($(this).val()) {
+                        icon.css('visibility', 'visible');
+                    } else {
+                        icon.css('visibility', 'hidden');
+                    }
+                });
+            });
+        }
+    });
+
+
+    $(function () {
+
+        //-----
+        $('#case2-history-txt-period').textbox({
+            prompt: '查询周期',
+            icons: [{
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case2-history-txt-vno').textbox({
+            prompt: '查询版本',
+            icons: [{
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case2-history-txt-loc').textbox({
+            prompt: '查询办事处',
+            icons: [{
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case2-history-txt-outlet').textbox({
+            prompt: '查询考核售点',
+            icons: [{
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case2-history-txt-name').textbox({
+            prompt: '查询客户名称',
+            icons: [{
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        //------
+
+        $('#case2-history-ff').form({
+            success: function (data) {
+                $.messager.confirm(data, '是否刷新数据', function (r) {
+                    if (r) {
+                        $('#case2-history-dg').datagrid('reload');
+                    }
+                    $('#case2-history-dlg').dialog('close')
+                });
+
+            }
+        });
+        //down
+        $("#case2-history-btn-down").click(function () {
+            var params = $('#case2-history-dg').datagrid("options").queryParams;
+            var param = '?period=' + (params.period ? params.period : '') + '&vno=' + (params.vno ? params.vno : '');
+            if (!params) param = "";
+            url = "/down/history" + param;
+            $.get(url, function (result) {
+                $.messager.alert('结果已生成', result);
+                //$.get(result,function(){})
+                //window.open(result);
+            });
+        })
+
+            $("#case2-history-calcresult-btn-down").click(function () {
+            var params = $('#case2-history-dg-win').datagrid("options").queryParams;
+            var param = '?outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
+            if (!params) param = "";
+            url = "/down/calcresult" + param;
+            $.get(url, function (result) {
+                $.messager.alert('结果已生成', result);
+                //$.get(result,function(){})
+                //window.open(result);
+            });
+        })
+
+       
+        //end down
+        //search
+        $("#case2-history-btn-search").click(function () {
+            $('#case2-history-dg').datagrid('load', {
+                period: $('#case2-history-txt-period').textbox('getValue'),
+                vno: $('#case2-history-txt-vno').textbox('getValue'),
+            });
+        })
+        //end search
+
+                //search
+        $("#case2-history-win-btn-search").click(function () {
+            $('#case2-history-dg-win').datagrid('load', {
+                outlet: $('#case2-history-txt-outlet').textbox('getValue'),
+                loc: $('#case2-history-txt-loc').textbox('getValue'),
+                name: $('#case2-history-txt-name').textbox('getValue'),
+            });
+        })
+        //end search
+
+                //view
+        $("#case2-history-btn-view").click(function () {
+            MaskUtil.mask();
+            var row = $('#case2-history-dg').datagrid('getSelected');
+            var vno = row['版本'];
+            var period = row['周期'];
+            var description  = row['描述'];
+            $('#case2-history-dg-win').datagrid({
+                url: '/case2/version?period=' + period + '&vno=' + vno,
+            });
+            
+            $('#case2-history-win').window({
+                title:'版本'+period+'-'+vno+'-'+description,
+                minimizable:false,
+            }).window('open');
+            MaskUtil.unmask();
+        });
+        //end view
+
+
+    });
+///用于返回子对象
+    function formatField(value, row, index, n1, n2) {
+        return (row[n1] ? (row[n1][n2] ? row[n1][n2] : "") : '');
+
+    }
+//---------------
+
+</script>

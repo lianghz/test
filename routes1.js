@@ -1,5 +1,6 @@
 var controller = require('./modules/controller.js');
 var checkresult = require('./models/case1/checkResult.js');
+var formidable = require('formidable');
 
 module.exports = function (app) {
     app.get('/checkresult', function (req, res) {

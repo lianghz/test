@@ -69,7 +69,8 @@ function getCalcResult(req, res, cb) {
     var loc = req.body.loc;
     var outlet = req.body.outlet;
     var name = req.body.name;
-    if (!loc) {
+     
+    if (!req.body.period) {
         period = (req.query.period) ? parseInt(req.query.period.substring(4, 7)) : now.getMonth() + 1;
         loc = req.query.loc;
         outlet = req.query.outlet;
@@ -92,7 +93,7 @@ function getCalcResult(req, res, cb) {
         if (condition) condition += ","
         condition += "'名称':/" + name + "/";
     }
-    // console.log('condition=' + condition);
+//    console.log('condition=' + condition);
     condition = eval("({" + condition + "})");
     checkOutlets = {};
 
@@ -118,18 +119,17 @@ function getCalcResult(req, res, cb) {
         var total = count;
         ///find  
         outletModel.find(condition, function (err, outlets) {
+            //console.log(outlets);
             var docs = [];
             var rowId = 0;
             var promises = outlets.map(function (outlet) {
                 var checkResult, sales,sku;
                 return Q.Promise(function (resolve, reject) {
-                    console.log('checkResult2=');
                     outlet.getCheckResult(function (err, checkResult) {
                         outlet.getSales(function (err, sales) {
                             
                                 // params.paramDb("agreements", "agreement", function (agreements) {
-                                    outlet = getCalcResultViewModel(outlet, checkResult, sales, period, rowId);
-                                    console.log("outletttt="+JSON.stringify(outlet));
+                                    outlet = getCalcResultViewModel(outlet, checkResult, sales, period, rowId,skus,packagesSkus);
                                     rowId++;
                                     docs.push(outlet);
                                     resolve();
@@ -186,23 +186,120 @@ function getCalcResult(req, res, cb) {
 ////////////////////////////////
 
 ///客户资料，协议设置，检查结果，MM销量，周期，行Id
-function getCalcResultViewModel(outlet, checkResult, sales, period, rowId) {
+function getCalcResultViewModel(outlet, checkResult, sales, period, rowId,skus,packagesSkus) {
     outlet = toJson(outlet);
     checkResult = toJson(checkResult);
     sales = toJson(sales);
+    skus = toJson(skus);
 
-    var targetSales = outlet['P' + period];//售点对应的淡旺季类型
+    
+    //售点对应的淡旺季类型
+    var targetSales = outlet['P' + period];
    
-    ///"销量目标/元/月", "折扣/月/元"
-    // awardSum = eval("({'计算结果（元）（不含销量考核）':" + awardSum.toFixed(2) + ",'销量目标/元/月':" + salesTarget + ",'折扣/月/元':" + discTarget + ",})");
-    return _.extend(outlet, { 'MM销量': sales, '常备包装100%': 10,'目标销量':targetSales },checkResult);
+    //计算必备包装的销量
+    var packagesSales = [];
+    _.map(packagesSkus,function(item){
+        var packages = toJson(item);
+        var skusales = _.findWhere(sales,{'产品代码':packages['产品代码']});
+        skusales = _.pick(skusales,'销量');
+        packages = _.extend(packages,skusales);
+        packagesSales.push(packages);
+    });
+
+    //按包装类型小计销量，判断是否达标
+    packagesSales = _.groupBy(packagesSales,'序号');//该函数得到的结果是[1:{a:1,b:2},2:{a:2,b:3}]这种形式
+    var isPackage='Y';//必备包装是否达标
+    for (var item in packagesSales) {
+          var idx = item[0]["序号"];
+        var sumSales=0.0;
+        _.map(item,function(item2){
+            sumSales = sumSales + parseFloat((item2['销量']?item2['销量']:0));
+            //  console.log('item='+idx + ';sss='+ sumSales);
+        })
+        if(sumSales<10)
+        {
+            isPackage='N'
+            break;
+        }
+    }
+    
+
+    //计算总销量
+    var actualSales=0.0;
+    for (var key in sales) {
+        var item = sales[key];
+        actualSales += parseFloat(item['销量']);
+        var skutype = _.findWhere(skus,{'产品代码':item['产品代码']});
+        skutype = skutype?skutype['产品分类']:'无申请费用';
+        //console.log(skutype);
+        _.extend(item,{'产品类型':skutype,'折扣标准':0,'返还金额':0});
+    }
+
+    rate = actualSales/targetSales;
+
+    //计算奖励标准 A B(以后用配置表，暂时写死)
+    //rate:100%-200%	2.6 1.55
+    //rate:70%-99.9%	2.3 1.25
+    //常备包装:0.3 0.15
+    //冰柜盘点表:0.3 0.15
+    //下家分销表:0.3 0.15
+    var awardA = 0.0;
+    var awardB = 0.0;
+    if(rate>=0.7 && rate<1)
+    {
+        
+        awardA=2.3
+        awardB = 1.25
+        // console.log('aa='+awardA)
+    }else if(rate>=1 && rate<=2){
+        // console.log(2.6)
+        awardA=2.6
+        awardB=1.55
+    }
+    if(isPackage=='Y')
+    {
+        awardA+=0.3
+        awardB+=0.15
+    }
+    if(checkResult['冰柜盘点表']=='Y')
+    {
+        awardA+= 0.3
+        awardB+= 0.15
+    }
+    if(checkResult['下家分销表']=='Y')
+    {
+        awardA+= 0.3
+        awardB+= 0.15
+    }    
+    // console.log('bb='+awardA)
+
+    //计算折扣标准、返还金额
+    var awardSum = 0.0;
+    for (var key in sales) {
+        var item = sales[key];
+        var skutype = item['产品类型'];
+        //console.log(skutype);
+        if(skutype=='A'){
+             item['折扣标准']=awardA.toFixed(2);
+             item['返还金额']=(awardA*item['销量']).toFixed(2);
+             awardSum +=awardA*item['销量']
+        }else if(skutype=='B'){
+            item['折扣标准']=awardB.toFixed(2);
+            item['返还金额']=(awardB*item['销量']).toFixed(2);
+            awardSum +=awardB*item['销量']
+        }
+       
+    }
+
+    return _.extend(outlet, {'MM销量': sales,'常备包装的达成100%': isPackage,'目标销量':targetSales,'实际销量':actualSales,'销量达成率': rate.toFixed(4),'返还金额':awardSum.toFixed(2)},checkResult);
 }
 
-function saveNonKaVersion(req, res, cb) {
+function saveCase2Version(req, res, cb) {
     var period = req.body.period;
     var vno = req.body.vno;
     var vname = req.body.vname;
-    var collectionName = 'nonka' + period + 'v' + vno;
+    var collectionName = 'case2result' + period + 'v' + vno;
+    var collectionsaveName = 'case2saveresult' + period + 'v' + vno;
     var vdoc = { "周期": period, "版本": vno, "描述": vname, "保存时间": Date(), "修改时间": Date(), "操作人": "", "状态": 1 };
     vdoc = toJson(vdoc);
     // console.log('vdoc=' + vdoc);
@@ -210,7 +307,7 @@ function saveNonKaVersion(req, res, cb) {
         var SchemaParams = eval("(" + fields + ")");
         // console.log('scmm=' + fields)
         versionSchema.add(SchemaParams);
-        nonKaModel = mongoose.model(collectionName, salesSchema, collectionName);
+        nonKaModel = mongoose.model(collectionsaveName, salesSchema, collectionName);
         nonKaModel.remove({}, function (err, result) {
             getCalcResult(req, res, function (docs) {
                 docs = JSON.parse(JSON.stringify(docs))
@@ -241,11 +338,11 @@ function checkVersion(req, res, cb) {
     var vno = req.body.vno;
     var over = req.body.over;
     if (over == 'ok') {
-        saveNonKaVersion(req, res, cb);
+        saveCase2Version(req, res, cb);
     } else {
         versionModel.count({ '周期': period, '版本': vno }, function (err, count) {
             if (count == 0) {
-                saveNonKaVersion(req, res, cb);
+                saveCase2Version(req, res, cb);
             } else {
                 cb("该版本已经存在,是否覆盖")
             }
@@ -362,7 +459,7 @@ function getGrid(cb) {
 
 // cb({ "excelHeader": excelHeader, "docs": docs });
 var methods = { 'getCalcResult': getCalcResult, 
-'saveNonKaVersion': saveNonKaVersion, 
+'saveCase2Version': saveCase2Version, 
 'checkVersion': checkVersion,
 'getDataForExcel':getDataForExcel,
 'getGrid':getGrid };

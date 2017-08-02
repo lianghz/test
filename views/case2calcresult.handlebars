@@ -1,51 +1,51 @@
-<table id="calcresult-dg" title="返还奖励计算" style="width:100%;height:250px;border-top:0px;" toolbar="#calcresult-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+<table id="case2-calcresult-dg" title="返还奖励计算" style="width:100%;height:250px;border-top:0px;" toolbar="#case2-calcresult-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
-<div id="calcresult-tbr">
+<div id="case2-calcresult-tbr">
     {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#calcresult-dlg').dialog('open')">上传结果</a>--}}
     <a id="calcresult-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
     {{!--<a id="calcresult-btn-del" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
     <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span>
     <span style="display:inline-block;margin-top:6px;margin-right:5px;margin-bottom:1px">计算月份:</span>
-    <input id="calcresult-txt-period" style="width:100px;height:25px">
+    <input id="case2-calcresult-txt-period" style="width:100px;height:25px">
     <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span> {{!--
     <input id="calcresult-txt-bu" style="width:90px;height:25px">--}}
-    <input id="calcresult-txt-loc" style="width:120px;height:25px">
-    <input id="calcresult-txt-outlet" style="width:120px;height:25px">
-    <input id="calcresult-txt-name" style="width:200px;height:25px">
-    <a id="calcresult-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-sum">查询计算</a>
+    <input id="case2-calcresult-txt-loc" style="width:120px;height:25px">
+    <input id="case2-calcresult-txt-outlet" style="width:120px;height:25px">
+    <input id="case2-calcresult-txt-name" style="width:200px;height:25px">
+    <a id="case2-calcresult-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-sum">查询计算</a>
     <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span>
-    <a id="calcresult-bt-save" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="openDialogSave()">保存结果</a>
+    <a id="case2-calcresult-bt-save" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="openDialogSave()">保存结果</a>
 </div>
-<input id="calcresult-params" type="hidden" name="referrer" value="{{params}}">
-<input id="calcresult-params2" type="hidden" name="referrer" value="{{params2}}">
+<input id="case2-calcresult-params" type="hidden" name="referrer" value="{{params}}">
+<input id="case2-calcresult-params2" type="hidden" name="referrer" value="{{params2}}">
 
-<div id="calcresult-dlg-save" class="easyui-dialog" title="保存计算结果" style="width:400px;height:200px;padding:10px" data-options="
+<div id="case2-calcresult-dlg-save" class="easyui-dialog" title="保存计算结果" style="width:400px;height:200px;padding:10px" data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
                     text:'保存',
                     iconCls:'icon-ok',
                     handler:function(){
-                        $('#calcresult-ff-save').submit();
+                        $('#case2-calcresult-ff-save').submit();
                         
                     }
                 },{
                     text:'取消',
                     handler:function(){
-                        $('#calcresult-dlg-save').dialog('close');
+                        $('#case2-calcresult-dlg-save').dialog('close');
                     }
                 }]
             ">
-    <form id="calcresult-ff-save" action="/savenonkaversion" method="post">
+    <form id="case2-calcresult-ff-save" action="/case2/saveversion" method="post">
         <table>
             <tr>
                 <td>
-                    <input id="calcresult-ff-period" name="period" class="f1 easyui-textbox" data-options="label:'周期:',required:true,readonly:true,validateOnCreate:false,err:err"></input>
+                    <input id="case2-calcresult-ff-period" name="period" class="f1 easyui-textbox" data-options="label:'周期:',required:true,readonly:true,validateOnCreate:false,err:err"></input>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input id="calcresult-ff-vno" name="vno" style="width:200px" class="f1 easyui-numberbox tb" data-options="label:'版本号:',prompt:'输入数字',required:true,validType:'length[1,3]'"></input>
+                    <input id="case2-calcresult-ff-vno" name="vno" style="width:200px" class="f1 easyui-numberbox tb" data-options="label:'版本号:',prompt:'输入数字',required:true,validType:'length[1,3]'"></input>
                 </td>
             </tr>
             <tr>
@@ -53,34 +53,68 @@
                 </td>
             </tr>
         </table>
-        <input id="calcresult-ff-outlet" type="hidden" name="outlet" value="">
-        <input id="calcresult-ff-loc" type="hidden" name="loc" value="">
-        <input id="calcresult-ff-name" type="hidden" name="name" value="">
-        <input id="calcresult-ff-over" type="hidden" name="over" value="">
+        <input id="case2-calcresult-ff-outlet" type="hidden" name="outlet" value="">
+        <input id="case2-calcresult-ff-loc" type="hidden" name="loc" value="">
+        <input id="case2-calcresult-ff-name" type="hidden" name="name" value="">
+        <input id="case2-calcresult-ff-over" type="hidden" name="over" value="">
     </form>
 </div>
 
 <script>
-    var params = $('#calcresult-params').val();
-    var params2 = $('#calcresult-params2').val();
-    //console.log(params2);
+    var params = $('#case2-calcresult-params').val();
+    var params2 = $('#case2-calcresult-params2').val();
+    params = params.replace('[',"")
+    params = params.replace(']',"")
+    var sty = "<span class=\"datagrid-row-expander datagrid-row-expand\" style=\"display:inline-block;width:16px;height:16px;cursor:pointer;\"></span>";
+    var exp = "[{field:'a',title:'　', width:25,formatter: function(value,row,index){return '"+ sty +"'}},"
+    params = exp + params + "]";
+    //console.log(params);
     params = eval('[' + params + ']');
     //params2 = eval('[' + params2 + ']');
+   
+    
 
-    $('#calcresult-dg').datagrid({
+    $('#case2-calcresult-dg').datagrid({
         url: '/case2/calcresultview',
+        view: detailview,        
         pagePosition: 'bottom',
         //pagination: true,
-        rownumbers: true,
+        {{!--rownumbers: true,--}}
         //pageSize: 30,
         singleSelect: false,
-        //frozenColumns: params2,
+        //frozenColumns: [[{field:'a',title:'　', width:25,formatter: function(value,row,index){return 'aa'}}]],
         columns: params,
+        //columns:[params],
         rowStyler: function (index, row) {
             if (row['考核销量售点'] == row['SAP售点']) {
                 return 'color:blue;';
             }
         },
+        detailFormatter:function(index,row){
+                    //return '<div class="aaa"></div>';
+                    var mmsales=row.MM销量;
+                    var trStr = "";
+                    for(key in mmsales){
+                        trStr += '<tr class="detailview'+index+'" style="display:none"><td></td><td></td><td></td>';
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品代码']+'</td>'//SKU
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品名称']+'</td>'//SKU
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['产品类型']+'</td>'//产品类型
+                        trStr += '<td></td><td></td><td></td><td></td>'
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['销量']+'</td>'//实际销量
+                        trStr += '<td></td>'
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['折扣标准']+'</td>'//折扣标准
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['返还金额']+'</td></tr>'
+                    }
+                    return trStr;
+                },
+        onExpandRow: function(index,row){
+            $(".detailview"+index).prev().hide();
+            $(".detailview"+index).show();
+
+        },
+        onCollapseRow: function(index, row){
+            $(".detailview"+index).hide();
+        }
 
     });
 
@@ -118,7 +152,7 @@
 
         //-----
 
-        $('#calcresult-txt-period').textbox({
+        $('#case2-calcresult-txt-period').textbox({
             value: new Date().format("yyyyMM"),
             icons: [{
                 iconCls: 'icon-filter',
@@ -132,21 +166,21 @@
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#calcresult-txt-loc').textbox({
+        $('#case2-calcresult-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
                 iconCls: 'icon-filter',
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#calcresult-txt-outlet').textbox({
+        $('#case2-calcresult-txt-outlet').textbox({
             prompt: '查询考核售点',
             icons: [{
                 iconCls: 'icon-filter',
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#calcresult-txt-name').textbox({
+        $('#case2-calcresult-txt-name').textbox({
             prompt: '查询店名',
             icons: [{
                 iconCls: 'icon-filter',
@@ -154,10 +188,10 @@
         }).textbox('addClearBtn', 'icon-clear');
         //------
 
-        $('#calcresult-ff-save').form({
+        $('#case2-calcresult-ff-save').form({
             onSubmit: function () {
                 if ($(this).form('enableValidation').form('validate')) {
-                    $('#calcresult-dlg-save').dialog('close');
+                    $('#case2-calcresult-dlg-save').dialog('close');
                     MaskUtil.mask();
                     return true;
                 } else {
@@ -170,8 +204,8 @@
 
                     $.messager.confirm(data, '该版本已经存在,是否覆盖?<br>点确定,覆盖<br>点取消,修改版本号', function (r) {
                         if (r) {
-                            $('#calcresult-ff-over').val('ok');
-                            $('#calcresult-ff-save').submit();
+                            $('#case2-calcresult-ff-over').val('ok');
+                            $('#case2-calcresult-ff-save').submit();
                         } else {
                             openDialogSave();
                         }
@@ -185,8 +219,8 @@
         //down
         $("#calcresult-btn-down").click(function () {
             MaskUtil.mask();
-            var params = $('#calcresult-dg').datagrid("options").queryParams;
-            var param = '?period=' + (params.period ? params.period : $('#calcresult-txt-period').textbox('getValue')) + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
+            var params = $('#case2-calcresult-dg').datagrid("options").queryParams;
+            var param = '?period=' + (params.period ? params.period : $('#case2-calcresult-txt-period').textbox('getValue')) + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
             if (!params) param = "";
             url = "/down/calcresult" + param;
             $.get(url, function (result) {
@@ -197,12 +231,12 @@
         })
         //end down
         //search
-        $("#calcresult-btn-search").click(function () {
-            $('#calcresult-dg').datagrid('load', {
-                period: $('#calcresult-txt-period').textbox('getValue'),
-                outlet: $('#calcresult-txt-outlet').textbox('getValue'),
-                loc: $('#calcresult-txt-loc').textbox('getValue'),
-                name: $('#calcresult-txt-name').textbox('getValue'),
+        $("#case2-calcresult-btn-search").click(function () {
+            $('#case2-calcresult-dg').datagrid('load', {
+                period: $('#case2-calcresult-txt-period').textbox('getValue'),
+                outlet: $('#case2-calcresult-txt-outlet').textbox('getValue'),
+                loc: $('#case2-calcresult-txt-loc').textbox('getValue'),
+                name: $('#case2-calcresult-txt-name').textbox('getValue'),
             });
         })
         //end search
@@ -210,7 +244,7 @@
         ///save
         //down
         {{!--$("#calcresult-btn-down").click(function () {
-            var params = $('#calcresult-dg').datagrid("options").queryParams;
+            var params = $('#case2-calcresult-dg').datagrid("options").queryParams;
             var param = '?period=' + (params.period ? params.period : '') + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
             if (!params) param = "";
             url = "/down/calcresult" + param;
@@ -231,18 +265,18 @@
     //---------------
 
     function openDialogSave() {
-        var params = $('#calcresult-dg').datagrid("options").queryParams;
-        $('#calcresult-ff-over').val("");
-        $('#calcresult-ff-outlet').val(params.outlet ? params.outlet : '');
-        $('#calcresult-ff-loc').val(params.loc ? params.loc : '');
-        $('#calcresult-ff-name').val(params.name ? params.name : '');
-        var v = $('#calcresult-txt-period').val();
-        $('#calcresult-ff-period').textbox({
+        var params = $('#case2-calcresult-dg').datagrid("options").queryParams;
+        $('#case2-calcresult-ff-over').val("");
+        $('#case2-calcresult-ff-outlet').val(params.outlet ? params.outlet : '');
+        $('#case2-calcresult-ff-loc').val(params.loc ? params.loc : '');
+        $('#case2-calcresult-ff-name').val(params.name ? params.name : '');
+        var v = $('#case2-calcresult-txt-period').val();
+        $('#case2-calcresult-ff-period').textbox({
             readonly: false,
             value: v,
         }).textbox({ readonly: true, });
 
-        $('#calcresult-dlg-save').dialog({
+        $('#case2-calcresult-dlg-save').dialog({
             modal: true,
         }).dialog('open');
     }

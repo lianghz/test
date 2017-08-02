@@ -53,7 +53,7 @@ function getCalcResult(req, res, cb) {
     var loc = req.body.loc;
     var outlet = req.body.outlet;
     var name = req.body.name;
-    if (!loc) {
+    if (!req.body.period) {
         period = (req.query.period) ? parseInt(req.query.period.substring(4, 7)) : now.getMonth() + 1;
         loc = req.query.loc;
         outlet = req.query.outlet;
@@ -265,6 +265,7 @@ function saveNonKaVersion(req, res, cb) {
     var vno = req.body.vno;
     var vname = req.body.vname;
     var collectionName = 'nonka' + period + 'v' + vno;
+     var collectionsaveName = 'savenonka' + period + 'v' + vno;
     var vdoc = { "周期": period, "版本": vno, "描述": vname, "保存时间": Date(), "修改时间": Date(), "操作人": "", "状态": 1 };
     vdoc = toJson(vdoc);
     // console.log('vdoc=' + vdoc);
@@ -272,7 +273,7 @@ function saveNonKaVersion(req, res, cb) {
         var SchemaParams = eval("(" + fields + ")");
         // console.log('scmm=' + fields)
         versionSchema.add(SchemaParams);
-        nonKaModel = mongoose.model(collectionName, salesSchema, collectionName);
+        nonKaModel = mongoose.model(collectionsaveName, salesSchema, collectionName);
         nonKaModel.remove({}, function (err, result) {
             getCalcResult(req, res, function (docs) {
                 docs = JSON.parse(JSON.stringify(docs))

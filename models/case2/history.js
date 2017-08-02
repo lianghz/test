@@ -12,8 +12,9 @@ var schema = mongoose.Schema();
 ///获取grid表头格式
 function getGrid(cb) {
     params.paramNoDb("versionsGrid", function (result) {
-        params.paramDb('agreements', 'calcResultGrid', function (result2, result3) {
-            cb(result, result2, result3);
+        params.paramNoDb('case2calcResultGrid', function (result2) {
+            // console.log(result2);
+            cb(result, result2);
         })
     });
 }
@@ -40,7 +41,7 @@ function getData(req, res, cb) {
     params.paramNoDb("versions", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model('versions2', schema, 'versions');//(文档，schema)定义了一个model
+        var dataModel = mongoose.model('case2version2', schema, 'case2versions');//(文档，schema)定义了一个model
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -60,14 +61,6 @@ function getDataHistory(req, res, cb) {
     var outlet = req.query.outlet;
     var name = req.query.name;
     var condition = "";
-    // if (period) {
-    //     if (condition) condition += ","
-    //     condition += "'周期':'" + period + "'";
-    // }
-    // if (vno) {
-    //     if (condition) condition += ","
-    //     condition += "'版本':'" + vno + "'";
-    // }
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";
@@ -80,12 +73,12 @@ function getDataHistory(req, res, cb) {
         if (condition) condition += ","
         condition += "'客户名称':/" + name + "/";
     }
-    // console.log(period);
-    var collection = 'nonka' + period + 'v' + vno;
-    
+    var collection = 'case2result' + period + 'v' + vno;
+     
+
     // console.log("col=" + condition);
     condition = eval("({" + condition + "})");
-    params.paramNoDb("calcResult", function (result) {
+    params.paramNoDb("case2CalcResult", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
         var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
