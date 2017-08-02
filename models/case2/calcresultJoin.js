@@ -4,7 +4,7 @@
  * 通过保存功能，把计算结果保存起来；
  * 每个结果按版本信息保存到一个独立的文档中；
  * 每个版本结果作为历史记录，可以翻查。
- * 
+ * case 2
  */
 
 var params = require("../../modules/params.js");
@@ -12,18 +12,22 @@ var mongoose = require('mongoose');
 var Q = require('q');
 var _ = require('underscore');
 
+var skus,packagesSkus;
+
 ///---定义schema model
+var outletSchema = mongoose.Schema();
 var setArgeementSchema = mongoose.Schema();
 var checkResultSchema = mongoose.Schema();
 var salesSchema = mongoose.Schema();
-var nonKaSchema = mongoose.Schema();
+var skuSchema = mongoose.Schema();
+var packageSchema = mongoose.Schema();
+var versionResultSchema = mongoose.Schema();
 var versionSchema = mongoose.Schema();
 
-var setArgeementModel = mongoose.model('setagreement', setArgeementSchema);
-var checkResultModel = mongoose.model('checkresult', checkResultSchema);
-var salesModel = mongoose.model('salesmm2', salesSchema, 'salesmms');
-var nonKaModel = mongoose.model('nonkaversion', nonKaSchema);
-var versionModel = mongoose.model('versions', versionSchema, 'versions');
+// var setArgeementModel = mongoose.model('setagreement', setArgeementSchema);
+
+
+
 
 var checkOutlets = {};//保存考核售点所对应售点的奖励金额合计、销量合计
 
@@ -33,18 +37,30 @@ function toJson(element) {
 
 checkOutlets = toJson(checkOutlets);
 
-//outle model 关联其它documents
-var outletSchema = mongoose.Schema();
-outletSchema.methods.getSetArgeement = function (cb) {
-     setArgeementModel.find({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
-};
 outletSchema.methods.getCheckResult = function (cb) {
-     checkResultModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
+     checkResultModel.findOne({ '售点': JSON.parse(JSON.stringify(this))['售点'] }, cb);
 };
 outletSchema.methods.getSales = function (cb) {
-     salesModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
+     salesModel.find({ '售点': JSON.parse(JSON.stringify(this))['售点'] }, cb);
 };
-var outletModel = mongoose.model('outlet2', outletSchema, 'outlettemps');
+
+salesSchema.methods.getSku = function (cb) {
+     skuSchema.findOne({ '产品代码': JSON.parse(JSON.stringify(this))['产品代码'] }, cb);
+};
+
+salesSchema.methods.getPackage = function (cb) {
+     packageSchema.findOne({ '产品代码': JSON.parse(JSON.stringify(this))['产品代码'] }, cb);
+};
+
+var salesModel = mongoose.model('case2sales', salesSchema, 'case2sales');
+var checkResultModel = mongoose.model('case2checkresult2', checkResultSchema,'case2checkresults');
+var packageModel = mongoose.model('case2package2', packageSchema, 'case2packages');
+var skuModel = mongoose.model('case2sku', skuSchema, 'case2skus');
+var versionResultModel = mongoose.model('case2versionResult2', versionResultSchema,'case2versionResults');
+var versionModel = mongoose.model('case2version', versionSchema, 'case2versions');
+var outletModel = mongoose.model('case2outlet2', outletSchema, 'case2outlettemps');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
+
+
 
 function getCalcResult(req, res, cb) {
     var now = new Date();
@@ -70,15 +86,34 @@ function getCalcResult(req, res, cb) {
     }
     if (outlet) {
         if (condition) condition += ","
-        condition += "'考核销量售点':/" + outlet + "/";
+        condition += "'售点':/" + outlet + "/";
     }
     if (name) {
         if (condition) condition += ","
-        condition += "'店名':/" + name + "/";
+        condition += "'名称':/" + name + "/";
     }
     // console.log('condition=' + condition);
     condition = eval("({" + condition + "})");
     checkOutlets = {};
+
+
+    
+    var promisesSku = skuModel.find(function(err,skus2){
+        return Q.Promise(function (resolve, reject) {
+            
+            skus = skus2;
+            //console.log('sku='+skus);
+            resolve();
+        })        
+    });
+
+    var promisesPackagesSkus = packageModel.find(function(err,packagesSkus2){
+            return Q.Promise(function (resolve, reject) {
+            packagesSkus = packagesSkus2;
+            resolve();
+        })    
+        
+    });    
     outletModel.count(condition, function (err, count) {
         var total = count;
         ///find  
@@ -86,24 +121,25 @@ function getCalcResult(req, res, cb) {
             var docs = [];
             var rowId = 0;
             var promises = outlets.map(function (outlet) {
-                var setArgeement, checkResult, sales;
+                var checkResult, sales,sku;
                 return Q.Promise(function (resolve, reject) {
-                    outlet.getSetArgeement(function (err, setArgeement) {
-                        outlet.getCheckResult(function (err, checkResult) {
-                            outlet.getSales(function (err, sales) {
-                                params.paramDb("agreements", "agreement", function (agreements) {
-                                    outlet = getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period, rowId, agreements);
+                    console.log('checkResult2=');
+                    outlet.getCheckResult(function (err, checkResult) {
+                        outlet.getSales(function (err, sales) {
+                            
+                                // params.paramDb("agreements", "agreement", function (agreements) {
+                                    outlet = getCalcResultViewModel(outlet, checkResult, sales, period, rowId);
+                                    console.log("outletttt="+JSON.stringify(outlet));
                                     rowId++;
                                     docs.push(outlet);
                                     resolve();
-                                })
-                            });
+                                // });
                         });
                     });
                 });
             });
             
-            Q.all(promises).then(function () {
+            Q.all(promises,promisesSku,promisesPackagesSkus).then(function () {
                 //console.log("checkoutlet=" + JSON.stringify(checkOutlets));
                 for (var key in checkOutlets) {
                     var rowId = checkOutlets[key]['rowId'];//rowid 指示了考核售点所在的行
@@ -150,114 +186,16 @@ function getCalcResult(req, res, cb) {
 ////////////////////////////////
 
 ///客户资料，协议设置，检查结果，MM销量，周期，行Id
-function getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period, rowId, agreements) {
+function getCalcResultViewModel(outlet, checkResult, sales, period, rowId) {
     outlet = toJson(outlet);
-    setArgeement = toJson(setArgeement);
     checkResult = toJson(checkResult);
     sales = toJson(sales);
-    agreements = toJson(eval("(" + agreements + ")"));
-    var awardSum = 0;//奖励合计
-    var outletKey = outlet['考核销量售点'];
-    var sapoutlet = outlet['SAP售点'];
-    var checkOutlet = eval("({'" + outletKey + "':{'奖励合计':0,'合计目标收入':0,'合计实际收入':0,'rowId':-1}})");
 
-    //var checkOutlet = eval("({'" + outletKey + "':'0'})");
-    checkOutlet = toJson(checkOutlet);
-
-
-    var seasonType = outlet['P' + period];//售点对应的淡旺季类型
-    //奖励方法
-    //淡旺季数量
-    //淡旺季奖励
-    var awardTypes, busySeasonQuantity, slackSeasonQuantity, busySeasonAward, slackSeasonAward, seasonQuantity, seasonAward;
-    var awardResult = {};
-    setArgeement.forEach(function (element) {
-        // element = toJson(element);
-        var dataType = element['数据类型'];
-        switch (dataType) {
-            case '奖励方法':
-                awardTypes = element;
-                break;
-            case '淡季数量':
-                slackSeasonQuantity = element;
-                break;
-            case '淡季奖励':
-                slackSeasonAward = element;
-                break;
-            case '旺季数量':
-                busySeasonQuantity = element;
-                break;
-            case '旺季奖励':
-                busySeasonAward = element;
-                break;
-            case '数量':
-                seasonQuantity = element;
-                break;
-            case '奖励':
-                seasonAward = element;
-                break;
-        }
-
-    });
-
-    ///淡季销量目标/元/月,旺季销量目标/元/月,淡季折扣/月/元,旺季折扣/月/元
+    var targetSales = outlet['P' + period];//售点对应的淡旺季类型
+   
     ///"销量目标/元/月", "折扣/月/元"
-    var salesTarget, discTarget;
-    switch (seasonType) {
-        case '淡':
-            seasonQuantity = slackSeasonQuantity;
-            seasonAward = slackSeasonAward;
-            salesTarget = outlet['淡季销量目标/元/月'];
-            discTarget = outlet['淡季折扣/月/元'];
-            break;
-        case '旺':
-            seasonQuantity = busySeasonQuantity;
-            seasonAward = busySeasonAward;
-            salesTarget = outlet['旺季销量目标/元/月'];
-            discTarget = outlet['旺季折扣/月/元'];
-            break;
-        default:
-            salesTarget = outlet['销量目标/元/月'];
-            discTarget = outlet['折扣/月/元'];
-            break;
-    }
-
-    ///奖励计算
-    awardResult = _.extend(awardResult, seasonQuantity);//目的是拷贝一个结构给awardResult
-    for (key in agreements) {
-        if (!awardTypes) break;
-        var awardType = awardTypes[key];
-        var quantity = seasonQuantity[key];
-        var award = seasonAward[key];
-        var checkQuantity = checkResult[key];
-        checkQuantity = (checkQuantity == 'Y' ? quantity : (!isNaN(checkQuantity) ? checkQuantity : 0));
-        checkQuantity = parseInt(checkQuantity);
-        checkQuantity = checkQuantity > quantity ? quantity : checkQuantity;
-        if (awardType == '达标') {
-            checkQuantity = checkQuantity >= quantity ? quantity : 0;
-        }
-        awardResult[key] = award * checkQuantity / quantity;
-
-        awardSum += (!isNaN(awardResult[key]) ? awardResult[key] : 0);
-    }
-
-
-    ///如果考核售点未保存则创建,存在则合计各项值
-    var revenue = sales ? parseInt(sales["收入"]) : 0;
-    if (!checkOutlets[outletKey]) checkOutlets = _.extend(checkOutlets, checkOutlet);
-    checkOutlets[outletKey]["奖励合计"] += awardSum;
-    checkOutlets[outletKey]["合计实际收入"] += revenue;
-    checkOutlets[outletKey]["合计目标收入"] += salesTarget ? parseFloat(salesTarget) : 0;
-    if (outletKey == sapoutlet) {
-        checkOutlets[outletKey]["rowId"] = rowId;
-        // console.log('-----------------')
-        // console.log('rowid2=' + rowId);
-        // console.log('-----------------')
-    }
-
-    ///"销量目标/元/月", "折扣/月/元"
-    awardSum = eval("({'计算结果（元）（不含销量考核）':" + awardSum.toFixed(2) + ",'销量目标/元/月':" + salesTarget + ",'折扣/月/元':" + discTarget + ",})");
-    return _.extend(outlet, { '实际收入（元）': revenue, '生动化目标': seasonAward, '生动化检查结果': checkResult, '生动化奖励计算': awardResult, '售点销量': sales }, awardSum);
+    // awardSum = eval("({'计算结果（元）（不含销量考核）':" + awardSum.toFixed(2) + ",'销量目标/元/月':" + salesTarget + ",'折扣/月/元':" + discTarget + ",})");
+    return _.extend(outlet, { 'MM销量': sales, '常备包装100%': 10,'目标销量':targetSales },checkResult);
 }
 
 function saveNonKaVersion(req, res, cb) {
@@ -359,17 +297,14 @@ function getDataForExcel(req, res, cb) {
             var docs = [];
             var rowId = 0;
             var promises = outlets.map(function (outlet) {
-                var setArgeement, checkResult, sales;
+                var checkResult, sales;
                 return Q.Promise(function (resolve, reject) {
-                    outlet.getSetArgeement(function (err, setArgeement) {
                         outlet.getCheckResult(function (err, checkResult) {
                             outlet.getSales(function (err, sales) {
-                                params.paramDb("agreements", "agreement", function (agreements) {
-                                    outlet = getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period, rowId, agreements);
+                                    outlet = getCalcResultViewModel(outlet, checkResult, sales, period, rowId);
                                     rowId++;
                                     docs.push(outlet);
-                                    resolve();
-                                })
+                                    resolve(); 
                             });
                         });
                     });
@@ -416,10 +351,19 @@ function getDataForExcel(req, res, cb) {
                  cb({ "excelHeader": excelHeader,"excelHeader2": excelHeader2,"argmentList": argmentList, "docs": docs });
             });
         }).select('-_id -__v').sort({ '考核销量售点': 1 });
+}
+
+///获取grid表头格式
+function getGrid(cb) {
+    params.paramNoDb("case2calcResultGrid", function (result) {
+        cb(result);
     });
 }
 
 // cb({ "excelHeader": excelHeader, "docs": docs });
-var methods = { 'getCalcResult': getCalcResult, 'saveNonKaVersion': saveNonKaVersion, 'checkVersion': checkVersion,
-'getDataForExcel':getDataForExcel };
+var methods = { 'getCalcResult': getCalcResult, 
+'saveNonKaVersion': saveNonKaVersion, 
+'checkVersion': checkVersion,
+'getDataForExcel':getDataForExcel,
+'getGrid':getGrid };
 module.exports = methods;

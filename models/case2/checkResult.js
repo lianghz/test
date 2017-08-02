@@ -9,6 +9,7 @@ var params = require("../../modules/params.js");
 var mongoose = require('mongoose');
 var SchemaParams;
 var schema = mongoose.Schema();
+var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
 var tempColl = require("./tempCollection.js");
 var Q = require('q');
 
@@ -19,7 +20,7 @@ function saveData(docs) {
         SchemaParams = eval("(" + result + ")");
         //console.log('saveData=' + result);
         schema.add(SchemaParams);
-        var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
+        
         var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
@@ -71,7 +72,7 @@ function getData(req, res, cb) {
     params.paramNoDb("case2checkresult", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
+        // var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -102,7 +103,7 @@ function getDataForExcel(req, res, cb) {
         params.paramNoDb("case2checkresult", function (result) {
             SchemaParams = eval("(" + result + ")");//貌似查询的时候不用定义schema格式，返回所有字段
             schema.add(SchemaParams);
-            var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
+            // var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
             //console.log(condition);
             dataModel.find(condition, function (err, docs) {
                 cb({ "excelHeader": excelHeader, "docs": docs });

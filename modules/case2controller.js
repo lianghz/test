@@ -5,10 +5,7 @@ var outlet = require("../models/case2/outlet.js");
 var sku = require("../models/case2/sku.js");
 var package = require("../models/case2/package.js");
 var sales = require("../models/case2/sales.js");
-// var calcResult = require("../models/case2/calcresult.js");
-// // var calcResultView = require("../models/calcresultView.js");
-// var calcresultJoin = require('../models/case2/calcresultJoin.js');
-// var history = require('../models/case2/history.js');
+var calcresultJoin = require('../models/case2/calcresultJoin.js');
 
 ///--------------------------------------------------------
 ///上传检查结果excel文件，把excel转JSON，把JSON保存到mongodb
@@ -181,6 +178,44 @@ function salesGetGrid(req, res) {
     });
 }
 ///------------
+///----calc
+function calcResultGetGrid(req, res) {
+    calcresultJoin.getGrid(function (docs) {
+        // console.log("d1=" + docs);
+        res.render('case2calcResult', { layout: null, params: docs});
+    });
+}
+
+function getCalcResultView(req, res) {
+    // CalcresultJoin = new calcresultJoin({});
+    calcresultJoin.getCalcResult(req, res, function (outlets) {
+        res.send(outlets);
+    });
+}
+function saveNonKaVersion(req, res) {
+    // CalcresultJoin = new calcresultJoin({});
+    calcresultJoin.saveNonKaVersion(req, res, function (msg) {
+        res.send(msg);
+    });
+}
+function checkVersion(req, res) {
+    calcresultJoin.checkVersion(req, res, function (msg) {
+        res.send(msg);
+    });
+}
+
+function calcResultDataToExcel(req, res) {
+    calcresultJoin.getDataForExcel(req, res, function (docs) {
+        var now = new Date();
+        var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        console.log("fileName="+fileName);
+        jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
+            res.send(filepath);
+        });
+
+    })
+}
+
 
 //// methods-----------------
 var methods = {
@@ -204,6 +239,8 @@ var methods = {
     'salesDataToExcel': salesDataToExcel,
     'salesGetData': salesGetData,
     'salesGetGrid': salesGetGrid,
+    'calcResultGetGrid':calcResultGetGrid,
+    'getCalcResultView':getCalcResultView,
 };
 
 module.exports = methods;

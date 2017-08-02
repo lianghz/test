@@ -11,7 +11,7 @@ var MaskUtil = (function () {
         }
         $mask.css({ width: "100%", height: $(document).height() });
         $maskMsg.css({
-            left: ($(document.body).outerWidth(true) - 190) / 2, top: ($(window).height() - 45) / 2,
+            left: ($(document.body).outerWidth(true) - 190) / 2, top: ($(window).height() - 45) / 2
         });
     }
     return {

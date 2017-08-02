@@ -1,6 +1,5 @@
 /**
  * 以售点资料的售点为对象，计算返还结果
- * 不再使用，由calcrestultjoin.js代替
  */
 var params = require("../../modules/params.js");
 var mongoose = require('mongoose');
