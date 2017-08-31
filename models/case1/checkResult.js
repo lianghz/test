@@ -14,11 +14,10 @@ var SchemaParams;
 var CheckResultSchema = mongoose.Schema();
 
 //先删除原数据，再更新
-function removeSaveData(docs)
-{
-    var removeDataModel = mongoose.model('CheckResult', schema);//(文档，schema)定义了一个model
+function removeSaveData(docs) {
+    var removeDataModel = mongoose.model('CheckResult', CheckResultSchema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
-        saveResult(docs); 
+        saveResult(docs);
     });
 }
 
@@ -39,15 +38,17 @@ function saveResult(resultDocs) {
             }
             //resultDoc = resultDoc.replace(".", "/.");
             return Q.Promise(function (resolve, reject) {
-                checkResult.update({ 'SAP售点': resultDoc.SAP售点 },
-                    resultDoc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        };
-                        resolve();
-                    });
+                checkResult.remove({ 'SAP售点': resultDoc.SAP售点 }, function () {
+                    checkResult.update({ 'SAP售点': resultDoc.SAP售点 },
+                        resultDoc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            };
+                            resolve();
+                        });
+                });
             })
         });
         Q.all(promises).then(function () {
@@ -151,9 +152,11 @@ function getResultForExcel(req, res, cb) {
 
 }
 
-var methods = { 'saveResult': saveResult,
- 'getResultGrid': getResultGrid, 
- 'getResultData': getResultData, 
- 'getResultForExcel': getResultForExcel,
-'removeSaveData':removeSaveData };
+var methods = {
+    'saveResult': saveResult,
+    'getResultGrid': getResultGrid,
+    'getResultData': getResultData,
+    'getResultForExcel': getResultForExcel,
+    'removeSaveData': removeSaveData
+};
 module.exports = methods;

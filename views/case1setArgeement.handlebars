@@ -1,18 +1,18 @@
-<table id="setargeement-dg" title="生动化检查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#setargeement-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+<table id="setargeement-dg" title="售点协议上传" style="width:100%;height:250px;border-top:0px;" toolbar="#setargeement-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
 <div id="setargeement-tbr">
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#setargeement-dlg').dialog('open')">上传结果</a>
-    <a id="setargeement-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#setargeement-dlg').dialog('open')">上传售点协议</a>
+    <a id="setargeement-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载售点协议</a>
     {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
-    <input id="setargeement-txt-bu" style="width:90px;height:25px">
-    <input id="setargeement-txt-loc" style="width:120px;height:25px">
+    {{!--<input id="setargeement-txt-bu" style="width:90px;height:25px">
+    <input id="setargeement-txt-loc" style="width:120px;height:25px">--}}
     <input id="setargeement-txt-outlet" style="width:120px;height:25px">
-    <input id="setargeement-txt-name" style="width:200px;height:25px">
+    {{!--<input id="setargeement-txt-name" style="width:200px;height:25px">--}}
     <a id="setargeement-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true"/>
 </div>
 <input id="setargeement-params" type="hidden" name="referrer" value="{{params}}">
 
-<div id="setargeement-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+<div id="setargeement-dlg" class="easyui-dialog" title="上传售点协议文件" style="width:400px;height:200px;padding:10px" data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
@@ -147,10 +147,10 @@
         //search
         $("#setargeement-btn-search").click(function () {
             $('#setargeement-dg').datagrid('load', {
-                bu: $('#setargeement-txt-bu').textbox('getValue'),
+                //bu: $('#setargeement-txt-bu').textbox('getValue'),
                 outlet: $('#setargeement-txt-outlet').textbox('getValue'),
-                loc: $('#setargeement-txt-loc').textbox('getValue'),
-                name: $('#setargeement-txt-name').textbox('getValue'),
+               //loc: $('#setargeement-txt-loc').textbox('getValue'),
+                //name: $('#setargeement-txt-name').textbox('getValue'),
             });
         })
         //end search

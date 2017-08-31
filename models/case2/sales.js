@@ -10,12 +10,19 @@ var SchemaParams;
 var schema = mongoose.Schema();
 var Q = require('q');
 
+function removeSaveData(docs) {
+    var removeDataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+    removeDataModel.remove({}, function (err, result) {
+        saveData(docs);
+    });
+}
+
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
     params.paramNoDb("case2sales", function (result) {
         SchemaParams = eval("(" + result + ")");
-        console.log('saveData-sales=' + result);
+        // console.log('saveData-sales=' + result);
         schema.add(SchemaParams);
         var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
         var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
@@ -26,14 +33,16 @@ function saveData(docs) {
                 }
             }
             // console.log('data1='+doc);
-            dataModel.update({ '产品代码': doc['产品代码'],'售点': doc['售点'] },
-                doc,
-                { upsert: true },
-                function (err, docs) {
-                    if (err) {
-                        console.error(err.stack);
-                    }
-                });
+            dataModel.remove({ '产品代码': doc['产品代码'], '售点': doc['售点'] }, function () {
+                dataModel.update({ '产品代码': doc['产品代码'], '售点': doc['售点'] },
+                    doc,
+                    { upsert: true },
+                    function (err, docs) {
+                        if (err) {
+                            console.error(err.stack);
+                        }
+                    });
+            });
         });
     });
 }
@@ -55,19 +64,19 @@ function getData(req, res, cb) {
     var bu = req.query.bu;
     var condition = "";
     // console.log("ccsdsds1="+sku);
-        if (outlet) {
+    if (outlet) {
         if (condition) condition += ","
         condition += "'售点':/" + outlet + "/";
         // console.log("ccsdsds="+condition);
     }
-            if (bu) {
+    if (bu) {
         if (condition) condition += ","
         condition += "'办事处':/" + bu + "/";
         // console.log("ccsdsds="+condition);
     }
     if (sku) {
         if (condition) condition += ","
-        condition += "'产品代码':/" + sku + "/";
+        condition += "'产品代码':" + sku;
         // console.log("ccsdsds="+condition);
     }
     if (name && name != '') {
@@ -130,6 +139,7 @@ var methods = {
     'saveData': saveData,
     'getGrid': getGrid,
     'getData': getData,
-    'getDataForExcel': getDataForExcel
+    'getDataForExcel': getDataForExcel,
+    'removeSaveData': removeSaveData
 };
 module.exports = methods;

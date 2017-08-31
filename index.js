@@ -44,3 +44,7 @@ require('./routes2.js')(app);
 app.listen(app.get('port'), function () {
     console.log('express started on http://localhost:' + app.get('port'));
 });
+
+process.on('uncaughtException', function (err) { 
+  console.log('Caught exception: ' + err); 
+}); 

@@ -10,7 +10,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.checkResultSave(res, filepath);
+            controller.checkResultSave(res, filepath,fields);
         });
     });
     app.get('/case2/down/checkresult', function (req, res) {
@@ -29,7 +29,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.outletSaveData(res, filepath);
+            controller.outletSaveData(res, filepath,fields);
         });
     });
     app.get('/case2/down/outlet', function (req, res) {
@@ -48,7 +48,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.skuSaveData(res, filepath);
+            controller.skuSaveData(res, filepath,fields);
         });
     });
     app.get('/case2/down/sku', function (req, res) {
@@ -67,7 +67,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.packageSaveData(res, filepath);
+            controller.packageSaveData(res, filepath,fields);
         });
     });
     app.get('/case2/down/package', function (req, res) {
@@ -85,7 +85,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.salesSaveData(res, filepath);
+            controller.salesSaveData(res, filepath,fields);
         });
     });
     app.get('/case2/down/sales', function (req, res) {
@@ -109,6 +109,9 @@ module.exports = function (app) {
         app.post('/case2/saveversion', function (req, res) {
         controller.checkVersion(req, res);
     });
+   app.get('/case2/down/calcresult', function (req, res) {
+        controller.calcResultDataToExcel(req, res);
+    });
 
     ///历史版本
     app.get('/case2/down/history', function (req, res) {
@@ -124,5 +127,9 @@ module.exports = function (app) {
     app.get('/case2/version', function (req, res) {
 
         controller.versionsGetHistory(req, res);
+    });
+
+    app.get('/case2/down/versionsGetHistoryToExcel', function (req, res) {
+        controller.versionsGetHistoryToExcel(req, res);
     });
 }

@@ -11,6 +11,13 @@ var schema = mongoose.Schema();
 var dataModel = mongoose.model('case2package', schema);//(文档，schema)定义了一个model
 var Q = require('q');
 
+function removeSaveData(docs) {
+    var removeDataModel = mongoose.model('case2package', schema);//(文档，schema)定义了一个model
+    removeDataModel.remove({}, function (err, result) {
+        saveData(docs);
+    });
+}
+
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
@@ -26,15 +33,16 @@ function saveData(docs) {
                     doc = JSON.parse(JSON.stringify(doc).replace(key, key2));
                 }
             }
-            // console.log('data1='+doc);
-            dataModel.update({ '产品代码': doc['产品代码'] },
-                doc,
-                { upsert: true },
-                function (err, docs) {
-                    if (err) {
-                        console.error(err.stack);
-                    }
-                });
+            dataModel.remove({ '产品代码': doc['产品代码'] }, function () {
+                dataModel.update({ '产品代码': doc['产品代码'] },
+                    doc,
+                    { upsert: true },
+                    function (err, docs) {
+                        if (err) {
+                            console.error(err.stack);
+                        }
+                    });
+            });
         });
     });
 }
@@ -69,7 +77,7 @@ function getData(req, res, cb) {
     params.paramNoDb("case2package", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        
+
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -78,7 +86,7 @@ function getData(req, res, cb) {
                 var totalDocs = JSON.stringify(docs);
                 cb(totalDocs);
             }).sort('序号');
-           // }).limit(rows).skip(skip);
+            // }).limit(rows).skip(skip);
         });
 
     });
@@ -121,6 +129,7 @@ var methods = {
     'saveData': saveData,
     'getGrid': getGrid,
     'getData': getData,
-    'getDataForExcel': getDataForExcel
+    'getDataForExcel': getDataForExcel,
+    'removeSaveData': removeSaveData
 };
 module.exports = methods;

@@ -1,18 +1,18 @@
-<table id="sales-dg" title="生动化检查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#sales-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+<table id="sales-dg" title="MM销量" style="width:100%;height:250px;border-top:0px;" toolbar="#sales-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
 <div id="sales-tbr">
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#sales-dlg').dialog('open')">上传结果</a>
-    <a id="sales-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#sales-dlg').dialog('open')">上传MM销量</a>
+    <a id="sales-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载MM销量</a>
     {{!--<a id="sales-btn-del" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
-    <input id="sales-txt-bu" style="width:90px;height:25px">
-    <input id="sales-txt-loc" style="width:120px;height:25px">
+    {{!--<input id="sales-txt-bu" style="width:90px;height:25px">
+    <input id="sales-txt-loc" style="width:120px;height:25px">--}}
     <input id="sales-txt-outlet" style="width:120px;height:25px">
-    <input id="sales-txt-name" style="width:200px;height:25px">
+    {{!--<input id="sales-txt-name" style="width:200px;height:25px">--}}
     <a id="sales-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />
 </div>
 <input id="sales-params" type="hidden" name="referrer" value="{{params}}">
 
-<div id="sales-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+<div id="sales-dlg" class="easyui-dialog" title="上传MM销量文件" style="width:400px;height:200px;padding:10px" data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
@@ -142,10 +142,10 @@
         //search
         $("#sales-btn-search").click(function () {
             $('#sales-dg').datagrid('load', {
-                bu: $('#sales-txt-bu').textbox('getValue'),
+                //bu: $('#sales-txt-bu').textbox('getValue'),
                 outlet: $('#sales-txt-outlet').textbox('getValue'),
-                loc: $('#sales-txt-loc').textbox('getValue'),
-                name: $('#sales-txt-name').textbox('getValue'),
+                //loc: $('#sales-txt-loc').textbox('getValue'),
+                //name: $('#sales-txt-name').textbox('getValue'),
             });
         })
         //end search

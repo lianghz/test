@@ -136,7 +136,12 @@ module.exports = function (app) {
         controller.versionsGetData(req, res);
     });
     app.get('/version', function (req, res) {
-
         controller.versionsGetHistory(req, res);
+    });
+    app.get('/versionsGetHistGrid', function (req, res) {
+        controller.versionsGetHistGrid(req, res);
+    });
+    app.get('/down/versionsGetHistoryToExcel', function (req, res) {
+        controller.versionsGetHistoryToExcel(req, res);
     });
 }

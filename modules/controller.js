@@ -71,9 +71,9 @@ function setArgeementgetGrid(req, res) {
 }
 ////----outlet
 function outletSaveData(rse, fileName, fields) {
-    var cbrm = fields.cbrm;
+   
     var docs = jsonObj.ExcelToJson(fileName, "客户资料");
-    // console.log("docs1="+docs);
+    var cbrm = fields.cbrm;
     if (cbrm == 'on') {
         outlet.removeSaveData(docs);
     }
@@ -191,7 +191,7 @@ function calcResultDataToExcel(req, res) {
     calcresultJoin.getDataForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
-        console.log("fileName="+fileName);
+        // console.log("fileName="+fileName);
         jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
@@ -199,12 +199,13 @@ function calcResultDataToExcel(req, res) {
     })
 }
 
+
 ///history======================================
 function versionsDataToExcel(req, res) {
     history.getDataForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "版本信息" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
-        jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
 
@@ -217,18 +218,45 @@ function versionsGetData(req, res) {
     });
 }
 
+// function versionsGetGrid(req, res) {
+//     history.getGrid(function (result, result2, result3) {
+//         // console.log("d1=" + result);
+//         // console.log("d2=" + result2);
+//         res.render('case1history', { layout: null, params: result, paramsv1: result2, paramsv2: result3 });
+//     });
+// }
+
 function versionsGetGrid(req, res) {
-    history.getGrid(function (result, result2, result3) {
+    history.getGrid(function (result) {
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case1history', { layout: null, params: result, paramsv1: result2, paramsv2: result3 });
+        res.render('case1history', { layout: null, params: result});
     });
 }
 
+function versionsGetHistGrid(req,res){
+    history.getHistGrid(req,res,function(result1,result2){
+        var docs = {'paramsv1':result1,'paramsv2':result2};
+        res.send(docs);
+    })
+}
+
+///取历史计算结果
 function versionsGetHistory(req, res) {
     history.getDataHistory(req, res, function (docs) {
         res.send(docs);
     });
+}
+
+function versionsGetHistoryToExcel(req, res) {
+    history.getDataHistoryForExcel(req, res, function (docs) {
+        var now = new Date();
+        var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        jsonObj.jsonToExcelAuto(docs, fileName, function cb(filepath) {
+            res.send(filepath);
+        });
+
+    })
 }
 
 //// methods-----------------
@@ -258,6 +286,8 @@ var methods = {
     'versionsGetData': versionsGetData,
     'versionsGetGrid': versionsGetGrid,
     'versionsGetHistory': versionsGetHistory,
+    'versionsGetHistGrid':versionsGetHistGrid,
+    'versionsGetHistoryToExcel':versionsGetHistoryToExcel,
 };
 
 module.exports = methods;

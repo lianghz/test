@@ -36,13 +36,13 @@ checkOutlets = toJson(checkOutlets);
 //outle model 关联其它documents
 var outletSchema = mongoose.Schema();
 outletSchema.methods.getSetArgeement = function (cb) {
-     setArgeementModel.find({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
+    setArgeementModel.find({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
 };
 outletSchema.methods.getCheckResult = function (cb) {
-     checkResultModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
+    checkResultModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
 };
 outletSchema.methods.getSales = function (cb) {
-     salesModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
+    salesModel.findOne({ 'SAP售点': JSON.parse(JSON.stringify(this))['SAP售点'] }, cb);
 };
 var outletModel = mongoose.model('outlet2', outletSchema, 'outlettemps');
 
@@ -102,7 +102,7 @@ function getCalcResult(req, res, cb) {
                     });
                 });
             });
-            
+
             Q.all(promises).then(function () {
                 //console.log("checkoutlet=" + JSON.stringify(checkOutlets));
                 for (var key in checkOutlets) {
@@ -123,9 +123,15 @@ function getCalcResult(req, res, cb) {
                     amt = amt * rate;
                     amt = amt.toFixed(2);
                     if (rowId > -1) {
+                        var disc = docs[rowId]['折扣/月/元'];
+                        if(!disc)disc=0;
+                        // console.log('disc='+disc);
+                        if(amt>disc)amt=disc;
+
                         docs[rowId]['计算结果合计（包含销量考核）'] = amt;
                         docs[rowId]['合计目标收入'] = targetSales;
                         docs[rowId]['合计实际收入'] = actual;
+                        // console.log('amt2='+targetSales+'-'+amt);
                     }
                     // console.log(rowId);
                     // console.log(amt);
@@ -226,10 +232,12 @@ function getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period
     awardResult = _.extend(awardResult, seasonQuantity);//目的是拷贝一个结构给awardResult
     for (key in agreements) {
         if (!awardTypes) break;
-        var awardType = awardTypes[key];
-        var quantity = seasonQuantity[key];
-        var award = seasonAward[key];
+        // console.log('awardTypes='+key+'='+JSON.stringify(seasonQuantity))
+        var awardType = awardTypes?awardTypes[key]:'';
+        var quantity = seasonQuantity?seasonQuantity[key]:0;
+        var award = seasonAward?seasonAward[key]:0;
         var checkQuantity = checkResult[key];
+        outlet['备注']= seasonQuantity?'':'该售点没有设置协议';
         checkQuantity = (checkQuantity == 'Y' ? quantity : (!isNaN(checkQuantity) ? checkQuantity : 0));
         checkQuantity = parseInt(checkQuantity);
         checkQuantity = checkQuantity > quantity ? quantity : checkQuantity;
@@ -256,16 +264,22 @@ function getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period
     }
 
     ///"销量目标/元/月", "折扣/月/元"
+    if(awardSum=='')awardSum = 0.0;
+    if(salesTarget=='')salesTarget=0.0;
+    if(discTarget=='')discTarget=0.0;
+
     awardSum = eval("({'计算结果（元）（不含销量考核）':" + awardSum.toFixed(2) + ",'销量目标/元/月':" + salesTarget + ",'折扣/月/元':" + discTarget + ",})");
+    outlet['费用时间段']='P' + period;
     return _.extend(outlet, { '实际收入（元）': revenue, '生动化目标': seasonAward, '生动化检查结果': checkResult, '生动化奖励计算': awardResult, '售点销量': sales }, awardSum);
 }
 
+//保存结果
 function saveNonKaVersion(req, res, cb) {
     var period = req.body.period;
     var vno = req.body.vno;
     var vname = req.body.vname;
     var collectionName = 'nonka' + period + 'v' + vno;
-     var collectionsaveName = 'savenonka' + period + 'v' + vno;
+    var collectionsaveName = 'savenonka' + period + 'v' + vno;
     var vdoc = { "周期": period, "版本": vno, "描述": vname, "保存时间": Date(), "修改时间": Date(), "操作人": "", "状态": 1 };
     vdoc = toJson(vdoc);
     // console.log('vdoc=' + vdoc);
@@ -278,22 +292,34 @@ function saveNonKaVersion(req, res, cb) {
             getCalcResult(req, res, function (docs) {
                 docs = JSON.parse(JSON.stringify(docs))
                 docs = eval(docs);
-                nonKaModel.collection.insert(docs, function (err, d) {
-                    if (err) {
-                        cb('保存失败' + err);
-                    } else {
-                        versionModel.update({ '周期': period, '版本': vno },
-                            vdoc,
-                            { upsert: true },
-                            function (err, docs) {
-                                if (err) {
-                                    console.error(err.stack);
-                                    cb('保存失败版本' + err);
-                                };
-                                cb('保存成功');
-                            });
-                    }
-                })
+                for (var key in docs) {
+                    docs[key] = _.extend({ 'collname': 'body' }, docs[key]);
+                }
+                //docs.unshift([{'name':'agreements','params':header.agreement},{'collname':'header','params':header}]);
+
+                params.getHeader('case1', function (header) {
+                    docs.unshift({ 'name': 'agreements', 'params': header.agreement });
+                    docs.unshift({ 'collname': 'header', 'params': header });
+                    // var savedocs = [{'name':'agreements','params':header.agreement},{'collname':'header','params':header},{'name':'body','params':docs}];
+                    // var savedocs = [{'collname':'agreements','params':header.agreement},{'collname':'header','params':header},docs];
+                    // console.log('bsds='+header.agreement[0]['params'])
+                    nonKaModel.collection.insert(docs, function (err, d) {
+                        if (err) {
+                            cb('保存失败' + err);
+                        } else {
+                            versionModel.update({ '周期': period, '版本': vno },
+                                vdoc,
+                                { upsert: true },
+                                function (err, docs) {
+                                    if (err) {
+                                        console.error(err.stack);
+                                        cb('保存失败版本' + err);
+                                    };
+                                    cb('保存成功');
+                                });
+                        }
+                    })
+                });
             })
         });
     })
@@ -351,8 +377,8 @@ function getDataForExcel(req, res, cb) {
     condition = eval("({" + condition + "})");
     checkOutlets = {};
 
-    params.paramDb("agreements", "calcResultExcel", function (result,result2,result3) {
-        var excelHeader,excelHeader2,argmentList;
+    params.paramDb("agreements", "calcResultExcel", function (result, result2, result3) {
+        var excelHeader, excelHeader2, argmentList;
         excelHeader = result;
         excelHeader2 = result2;
         argmentList = result3;
@@ -396,9 +422,15 @@ function getDataForExcel(req, res, cb) {
                     amt = amt * rate;
                     amt = amt.toFixed(2);
                     if (rowId > -1) {
+                        var disc = docs[rowId]['折扣/月/元'];
+                        if(!disc)disc=0;
+                        // console.log('disc='+disc);
+                        if(amt>disc)amt=disc;
+
                         docs[rowId]['计算结果合计（包含销量考核）'] = amt;
                         docs[rowId]['合计目标收入'] = targetSales;
                         docs[rowId]['合计实际收入'] = actual;
+                        // console.log('amt='+targetSales+'-'+amt);
                     }
                     // console.log(rowId);
                     // console.log(amt);
@@ -414,13 +446,15 @@ function getDataForExcel(req, res, cb) {
                 //var totalDocs = JSON.stringify(docs);
                 //cb(totalDocs);
                 // console.log('eee'+excelHeader2);
-                 cb({ "excelHeader": excelHeader,"excelHeader2": excelHeader2,"argmentList": argmentList, "docs": docs });
+                cb({ "excelHeader": excelHeader, "excelHeader2": excelHeader2, "argmentList": argmentList, "docs": docs });
             });
         }).select('-_id -__v').sort({ '考核销量售点': 1 });
     });
 }
 
 // cb({ "excelHeader": excelHeader, "docs": docs });
-var methods = { 'getCalcResult': getCalcResult, 'saveNonKaVersion': saveNonKaVersion, 'checkVersion': checkVersion,
-'getDataForExcel':getDataForExcel };
+var methods = {
+    'getCalcResult': getCalcResult, 'saveNonKaVersion': saveNonKaVersion, 'checkVersion': checkVersion,
+    'getDataForExcel': getDataForExcel
+};
 module.exports = methods;

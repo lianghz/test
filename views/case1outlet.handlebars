@@ -2,10 +2,10 @@
  toolbar="#outlet-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
 <div id="outlet-tbr">
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#outlet-dlg').dialog('open')">上传结果</a>
-    <a id="outlet-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#outlet-dlg').dialog('open')">上传客户资料</a>
+    <a id="outlet-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载客户资料</a>
     {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
-    <input id="outlet-txt-bu" style="width:90px;height:25px">
+    {{!--<input id="outlet-txt-bu" style="width:90px;height:25px">--}}
     <input id="outlet-txt-loc" style="width:120px;height:25px">
     <input id="outlet-txt-outlet" style="width:120px;height:25px">
     <input id="outlet-txt-name" style="width:200px;height:25px">
@@ -13,7 +13,7 @@
 </div>
 <input id="outlet-params" type="hidden" name="referrer" value="{{params}}">
 
-<div id="outlet-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+<div id="outlet-dlg" class="easyui-dialog" title="上传客户资料文件" style="width:400px;height:200px;padding:10px" data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
@@ -110,7 +110,7 @@
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#outlet-txt-name').textbox({
-            prompt: '查询店名',
+            prompt: '查询客户名称',
             icons: [{
                 iconCls: 'icon-filter',
             }]
@@ -131,7 +131,7 @@
         //down
         $("#outlet-btn-down").click(function () {
             var params = $('#outlet-dg').datagrid("options").queryParams;
-            var param = '?bu=' + (params.bu ? params.bu : '') + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
+            var param = '?outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
             if (!params) param = "";
             url = "/down/outlet" + param;
             $.get(url, function (result) {
@@ -144,7 +144,6 @@
         //search
         $("#outlet-btn-search").click(function () {
             $('#outlet-dg').datagrid('load', {
-                bu: $('#outlet-txt-bu').textbox('getValue'),
                 outlet: $('#outlet-txt-outlet').textbox('getValue'),
                 loc: $('#outlet-txt-loc').textbox('getValue'),
                 name: $('#outlet-txt-name').textbox('getValue'),

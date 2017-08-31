@@ -13,6 +13,13 @@ var dataModel = mongoose.model('case2checkresult', schema);//(文档，schema)�
 var tempColl = require("./tempCollection.js");
 var Q = require('q');
 
+function removeSaveData(docs) {
+    var removeDataModel = mongoose.model('case2checkresult', schema);//(文档，schema)定义了一个model
+    removeDataModel.remove({}, function (err, result) {
+        saveData(docs);
+    });
+}
+
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
@@ -20,7 +27,7 @@ function saveData(docs) {
         SchemaParams = eval("(" + result + ")");
         //console.log('saveData=' + result);
         schema.add(SchemaParams);
-        
+
         var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
@@ -30,15 +37,17 @@ function saveData(docs) {
             }
             // console.log('data1='+doc);
             return Q.Promise(function (resolve, reject) {
-                dataModel.update({ '售点': doc['售点'] },
-                    doc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        }
-                        resolve();
-                    });
+                dataModel.remove({ '售点': doc['售点'] }, function () {
+                    dataModel.update({ '售点': doc['售点'] },
+                        doc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                            resolve();
+                        });
+                });
             })
         });
         Q.all(promises).then(function () {
@@ -116,6 +125,7 @@ var methods = {
     'saveData': saveData,
     'getGrid': getGrid,
     'getData': getData,
-    'getDataForExcel': getDataForExcel
+    'getDataForExcel': getDataForExcel,
+    'removeSaveData': removeSaveData
 };
 module.exports = methods;

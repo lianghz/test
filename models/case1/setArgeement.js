@@ -5,11 +5,10 @@ var SchemaParams;
 var schema = mongoose.Schema();
 
 //先删除原数据，再更新
-function removeSaveData(docs)
-{
+function removeSaveData(docs) {
     var removeDataModel = mongoose.model('setAgreement', schema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
-        saveData(docs); 
+        saveData(docs);
     });
 }
 
@@ -28,14 +27,16 @@ function saveData(docs) {
                     doc = JSON.parse(JSON.stringify(doc).replace(key, key2));
                 }
             }
-            dataModel.update({ 'SAP售点': doc.SAP售点, '数据类型': doc.数据类型 },
-                doc,
-                { upsert: true },
-                function (err, docs) {
-                    if (err) {
-                        console.error(err.stack);
-                    }
-                });
+            dataModel.remove({ 'SAP售点': doc.SAP售点, '数据类型': doc.数据类型 }, function () {
+                dataModel.update({ 'SAP售点': doc.SAP售点, '数据类型': doc.数据类型 },
+                    doc,
+                    { upsert: true },
+                    function (err, docs) {
+                        if (err) {
+                            console.error(err.stack);
+                        }
+                    });
+            });
         });
     });
 }
@@ -87,7 +88,7 @@ function getDataForExcel(req, res, cb) {
     }
     // console.log("cond1="+condition);
     condition = eval("({" + condition + "})");
-    
+
     params.paramDb("agreements", "setAgreementExcel", function (result) {
         var excelHeader;
         excelHeader = result;
@@ -107,6 +108,6 @@ var methods = {
     'getGrid': getGrid,
     'getData': getData,
     'getDataForExcel': getDataForExcel,
-    'removeSaveData':removeSaveData
+    'removeSaveData': removeSaveData
 };
 module.exports = methods;

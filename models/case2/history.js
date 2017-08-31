@@ -10,12 +10,67 @@ var SchemaParams;
 var schema = mongoose.Schema();
 
 ///获取grid表头格式
-function getGrid(cb) {
-    params.paramNoDb("versionsGrid", function (result) {
-        params.paramNoDb('case2calcResultGrid', function (result2) {
-            // console.log(result2);
-            cb(result, result2);
-        })
+// function getGrid(cb) {
+//     params.paramNoDb("versionsGrid", function (result) {
+//         params.paramNoDb('case2calcResultGrid', function (result2) {
+//             // console.log(result2);
+//             cb(result, result2);
+//         })
+//     });
+// }
+
+function getGrid(req, res, cb) {
+    var period = req.query.period;
+    var vno = req.query.vno;
+    var condition = "";
+    var collection = 'case2result' + period + 'v' + vno;
+    // console.log('collection='+collection)
+    condition = eval("({" + condition + "})");
+    var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
+    params.paramNoDb("versionsGrid", function (result1) {//历史清单表头
+        dataModel.find({ 'collname': 'header' }, function (err, header) {//历史表头参数
+            params.paramNoDbv('case2calcResultGrid', 'case2',header, function (result2) {
+                // console.log("rrrrrrrr="+header)
+                cb(result1, result2);
+
+            });
+        });
+    });
+}
+
+function getDataHistoryForExcel(req, res, cb) {
+    var period = req.query.period;
+    var vno = req.query.vno;
+    var loc = req.query.loc;
+    var outlet = req.query.outlet;
+    var name = req.query.name;
+    var condition = "";
+    if (loc) {
+        if (condition) condition += ","
+        condition += "'办事处':/" + loc + "/";
+    }
+    if (outlet) {
+        if (condition) condition += ","
+        condition += "'考核销量售点':'" + outlet + "'";
+    }
+    if (name) {
+        if (condition) condition += ","
+        condition += "'客户名称':/" + name + "/";
+
+    }
+    var collection = 'case2result' + period + 'v' + vno;
+    var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
+    dataModel.find({ 'collname': 'header' }, function (err, caseheader) {
+        // console.log('aaaa='+caseheader);
+        params.paramNoDbv('case2calcResultExcel', 'case2',caseheader, function (result) {
+            var excelHeader;
+            excelHeader = result;
+            
+            condition = eval("({'collname':'body'," + condition + "})");
+            dataModel.find(condition, function (err, docs) {
+                cb({ "excelHeader": excelHeader, "docs": docs });
+            });
+        });
     });
 }
 
@@ -47,13 +102,13 @@ function getData(req, res, cb) {
             dataModel.find(condition, function (err, docs) {
                 var totalDocs = "{\"total\":" + total + ",\"rows\":" + JSON.stringify(docs) + "}"//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
                 cb(totalDocs);
-            }).limit(rows).skip(skip);
+            }).sort({ '修改时间': -1 }).limit(rows).skip(skip);
         });
 
     });
 }
 
-///从数据库获取检查结果
+///获取历史版本的计算结果
 function getDataHistory(req, res, cb) {
     var period = req.query.period;
     var vno = req.query.vno;
@@ -74,20 +129,19 @@ function getDataHistory(req, res, cb) {
         condition += "'客户名称':/" + name + "/";
     }
     var collection = 'case2result' + period + 'v' + vno;
-     
+
 
     // console.log("col=" + condition);
-    condition = eval("({" + condition + "})");
-    params.paramNoDb("case2CalcResult", function (result) {
+    // condition = eval("({" + condition + "})");
+    condition = eval("({'collname':'body'," + condition + "})");
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
         var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
-            dataModel.find(condition, function (err, docs) {
-                var totalDocs = JSON.stringify(docs)//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
-                // console.log("c=" + totalDocs);
-                cb(totalDocs);
-            })
-    });
+        dataModel.find(condition, function (err, docs) {
+            var totalDocs = JSON.stringify(docs)//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
+            // console.log("c=" + totalDocs);
+            cb(totalDocs);
+        })
 }
 
 ///获取导出到excel的mongodb数据
@@ -127,6 +181,7 @@ var methods = {
     'getGrid': getGrid,
     'getData': getData,
     'getDataForExcel': getDataForExcel,
-    'getDataHistory': getDataHistory
+    'getDataHistory': getDataHistory,
+    'getDataHistoryForExcel':getDataHistoryForExcel,
 };
 module.exports = methods;

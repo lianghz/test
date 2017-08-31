@@ -1,4 +1,4 @@
-<table id="case2-history-dg" title="生动化检查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#case2-history-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+<table id="case2-history-dg" title="历史计算结果" style="width:100%;height:250px;border-top:0px;" toolbar="#case2-history-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
 <div id="case2-history-tbr">
     {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case2-history-dlg').dialog('open')">上传结果</a>--}}
@@ -47,8 +47,9 @@
         </table>
     </form>
 </div>
-
+{{!--历史窗口--}}
 <div id="case2-history-win" class="easyui-window" title="Fluid Window" style="width:60%;height:400px;" data-options="modal:true,closed:true,">
+    {{!--历史窗口datagrid--}}
     <table id="case2-history-dg-win" style="width:100%;height:250px;border-top:0px;"  toolbar="#case2-history-win-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
     </table>
 </div>
@@ -103,7 +104,7 @@
                         trStr += '<td></td><td></td><td></td><td></td>'
                         trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['销量']+'</td>'//实际销量
                         trStr += '<td></td>'
-                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['折扣标准']+'</td>'//折扣标准
+                        trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['折扣标准（元）']+'</td>'//折扣标准
                         trStr += '<td class="td1" style="padding:2pt">'+mmsales[key]['返还金额']+'</td></tr>'
                     }
                     return trStr;
@@ -213,10 +214,13 @@
         })
 
             $("#case2-history-calcresult-btn-down").click(function () {
-            var params = $('#case2-history-dg-win').datagrid("options").queryParams;
-            var param = '?outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
+           var row = $('#case2-history-dg').datagrid('getSelected');
+            var vno = row['版本'];
+            var period = row['周期'];
+            var param = '?period=' + (period ? period : '') + '&vno=' + (vno ? vno : '');
             if (!params) param = "";
-            url = "/down/calcresult" + param;
+
+            url = "/case2/down/versionsGetHistoryToExcel" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
                 //$.get(result,function(){})

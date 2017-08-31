@@ -13,6 +13,15 @@ var tempColl = require("./tempCollection.js");
 var Q = require('q');
 var dataModel = mongoose.model('case2outlet', schema);//(文档，schema)定义了一个model
 
+
+function removeSaveData(docs) {
+    var removeDataModel = mongoose.model('case2outlet', schema);//(文档，schema)定义了一个model
+    removeDataModel.remove({}, function (err, result) {
+        saveData(docs);
+    });
+}
+
+
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
@@ -30,16 +39,18 @@ function saveData(docs) {
             }
             // console.log('data1='+doc);
             return Q.Promise(function (resolve, reject) {
-                dataModel.update({ '售点': doc['售点'] },
-                    doc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        }
-                        resolve();
-                    });
-            })
+                dataModel.remove({ '售点': doc['售点'] }, function () {
+                    dataModel.update({ '售点': doc['售点'] },
+                        doc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                            resolve();
+                        });
+                });
+            });
         });
         Q.all(promises).then(function () {
             tempColl.createTempOutlet(function (msg) {
@@ -60,6 +71,9 @@ function getData(req, res, cb) {
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
     var outlet = req.query.outlet;
+    var sku = req.query.sku;
+    var name = req.query.name;
+    var loc = req.query.loc;
     var condition = "";
     // console.log("ccsdsds1="+outlet);
     if (outlet) {
@@ -67,12 +81,23 @@ function getData(req, res, cb) {
         condition += "'售点':/" + outlet + "/";
         // console.log("ccsdsds="+condition);
     }
+    if (name && name != '') {
+        if (condition) condition += ","
+        condition += "'客户名称':/" + name + "/";
+        //console.log("ccc=" + condition);
+    }
+    if (loc) {
+        if (condition) condition += ","
+        condition += "'办事处':/" + loc + "/";
+        // console.log("ccsdsds="+condition);
+    }
+
     // console.log("con1=" + condition);
     condition = eval("({" + condition + "})");
     params.paramNoDb("case2outlet", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        
+
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -116,6 +141,7 @@ var methods = {
     'saveData': saveData,
     'getGrid': getGrid,
     'getData': getData,
-    'getDataForExcel': getDataForExcel
+    'getDataForExcel': getDataForExcel,
+    'removeSaveData': removeSaveData,
 };
 module.exports = methods;

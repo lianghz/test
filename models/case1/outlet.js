@@ -12,11 +12,10 @@ var schema = mongoose.Schema();
 var tempColl = require("./tempCollection.js");
 var Q = require('q');
 
-function removeSaveData(docs)
-{
+function removeSaveData(docs) {
     var removeDataModel = mongoose.model('outlet', schema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
-        saveData(docs); 
+        saveData(docs);
     });
 }
 
@@ -37,16 +36,18 @@ function saveData(docs) {
             }
             // console.log('data1='+doc);
             return Q.Promise(function (resolve, reject) {
-                dataModel.update({ 'SAP售点': doc['SAP售点'] },
-                    doc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        }
-                        resolve();
-                    });
-            })
+                dataModel.remove({ 'SAP售点': doc['SAP售点'] }, function () {
+                    dataModel.update({ 'SAP售点': doc['SAP售点'] },
+                        doc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                            resolve();
+                        });
+                });
+            });
         });
         Q.all(promises).then(function () {
             tempColl.createTempOutlet(function (msg) {
@@ -66,12 +67,25 @@ function getData(req, res, cb) {
     var page = parseInt(req.query.page);
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
-    var outlet = req.query.outlet;
+     var outlet = req.query.outlet;
+    var sku = req.query.sku;
+    var name = req.query.name;
+    var loc = req.query.loc;
     var condition = "";
     // console.log("ccsdsds1="+outlet);
     if (outlet) {
         if (condition) condition += ","
-        condition += "'SAP售点':/" + outlet + "/";
+        condition += "'售点':/" + outlet + "/";
+        // console.log("ccsdsds="+condition);
+    }
+    if (name && name != '') {
+        if (condition) condition += ","
+        condition += "'客户名称':/" + name + "/";
+        //console.log("ccc=" + condition);
+    }
+    if (loc) {
+        if (condition) condition += ","
+        condition += "'办事处':/" + loc + "/";
         // console.log("ccsdsds="+condition);
     }
     // console.log("con1=" + condition);
@@ -124,6 +138,6 @@ var methods = {
     'getGrid': getGrid,
     'getData': getData,
     'getDataForExcel': getDataForExcel,
-    'removeSaveData':removeSaveData
+    'removeSaveData': removeSaveData
 };
 module.exports = methods;
