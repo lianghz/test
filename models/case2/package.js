@@ -64,7 +64,7 @@ function getData(req, res, cb) {
     // console.log("ccsdsds1="+sku);
     if (sku) {
         if (condition) condition += ","
-        condition += "'产品代码':/" + sku + "/";
+        condition += "'产品代码':" + sku;
         // console.log("ccsdsds="+condition);
     }
     if (name && name != '') {
@@ -72,7 +72,6 @@ function getData(req, res, cb) {
         condition += "'产品名称':/" + name + "/";
         //console.log("ccc=" + condition);
     }
-    // console.log("con1=" + condition);
     condition = eval("({" + condition + "})");
     params.paramNoDb("case2package", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段

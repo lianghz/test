@@ -67,7 +67,7 @@ function getData(req, res, cb) {
     var page = parseInt(req.query.page);
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
-     var outlet = req.query.outlet;
+    var outlet = req.query.outlet;
     var sku = req.query.sku;
     var name = req.query.name;
     var loc = req.query.loc;
@@ -109,13 +109,26 @@ function getData(req, res, cb) {
 ///获取导出到excel的mongodb数据
 function getDataForExcel(req, res, cb) {
     var outlet = req.query.outlet;
+    var sku = req.query.sku;
+    var name = req.query.name;
+    var loc = req.query.loc;
     var condition = "";
-    if (outlet && outlet != '') {
+    // console.log("ccsdsds1="+outlet);
+    if (outlet) {
         if (condition) condition += ","
-        condition += "'SAP售点':/" + outlet + "/";
+        condition += "'售点':/" + outlet + "/";
+        // console.log("ccsdsds="+condition);
+    }
+    if (name && name != '') {
+        if (condition) condition += ","
+        condition += "'客户名称':/" + name + "/";
         //console.log("ccc=" + condition);
     }
-    //console.log(condition);
+    if (loc) {
+        if (condition) condition += ","
+        condition += "'办事处':/" + loc + "/";
+        // console.log("ccsdsds="+condition);
+    }
     condition = eval("({" + condition + "})");
 
     params.paramNoDb("outletExcel", function (result) {

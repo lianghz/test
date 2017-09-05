@@ -89,28 +89,28 @@
         $('#setargeement-txt-bu').textbox({
             prompt: '查询BU',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#setargeement-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#setargeement-txt-outlet').textbox({
             prompt: '查询SAP售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#setargeement-txt-name').textbox({
             prompt: '查询店名',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -130,12 +130,11 @@
         //down
         $("#setargeement-btn-down").click(function () {
             var params = $('#setargeement-dg').datagrid("options").queryParams;
-            var param="?";
-            for(key in params)
-            {
-                param += key + '=' +params[key] + '&';
-               
+            var param = '?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/down/setargeement" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -148,7 +147,7 @@
         $("#setargeement-btn-search").click(function () {
             $('#setargeement-dg').datagrid('load', {
                 //bu: $('#setargeement-txt-bu').textbox('getValue'),
-                outlet: $('#setargeement-txt-outlet').textbox('getValue'),
+                outlet: $('#setargeement-txt-outlet').textbox('getValue')
                //loc: $('#setargeement-txt-loc').textbox('getValue'),
                 //name: $('#setargeement-txt-name').textbox('getValue'),
             });

@@ -98,28 +98,28 @@
         $('#checkresult-txt-bu').textbox({
             prompt: '查询BU',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#checkresult-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#checkresult-txt-outlet').textbox({
             prompt: '查询SAP售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#checkresult-txt-name').textbox({
             prompt: '查询店名',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -139,11 +139,11 @@
         //down
         $("#checkresult-btn-down").click(function () {
             var params = $('#checkresult-dg').datagrid("options").queryParams;
-            var param='?';
+            var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/down/checkresult" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);

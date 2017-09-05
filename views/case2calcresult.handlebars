@@ -9,7 +9,7 @@
     <input id="case2-calcresult-txt-period" style="width:100px;height:25px">
     <span class="datagrid-btn-separator" style="vertical-align: middle;display:inline-block;float:none"></span> {{!--
     <input id="calcresult-txt-bu" style="width:90px;height:25px">--}}
-    <input id="case2-calcresult-txt-loc" style="width:120px;height:25px">
+    {{!--<input id="case2-calcresult-txt-loc" style="width:120px;height:25px">--}}
     <input id="case2-calcresult-txt-outlet" style="width:120px;height:25px">
     <input id="case2-calcresult-txt-name" style="width:200px;height:25px">
     <a id="case2-calcresult-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-sum">查询计算</a>
@@ -155,35 +155,22 @@
         $('#case2-calcresult-txt-period').textbox({
             value: new Date().format("yyyyMM"),
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#calcresult-txt-bu').textbox({
-            prompt: '查询BU',
-            icons: [{
-                iconCls: 'icon-filter',
-            }]
-        }).textbox('addClearBtn', 'icon-clear');
-
-        $('#case2-calcresult-txt-loc').textbox({
-            prompt: '查询办事处',
-            icons: [{
-                iconCls: 'icon-filter',
-            }]
-        }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2-calcresult-txt-outlet').textbox({
-            prompt: '查询考核售点',
+            prompt: '查询售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2-calcresult-txt-name').textbox({
-            prompt: '查询店名',
+            prompt: '查询名称',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -220,8 +207,13 @@
         $("#case2-calcresult-btn-down").click(function () {
             MaskUtil.mask();
             var params = $('#case2-calcresult-dg').datagrid("options").queryParams;
-            var param = '?period=' + (params.period ? params.period : $('#case2-calcresult-txt-period').textbox('getValue')) + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
-            if (!params) param = "";
+            
+            var param = '?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1'
+
             url = "/case2/down/calcresult" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -234,9 +226,8 @@
         $("#case2-calcresult-btn-search").click(function () {
             $('#case2-calcresult-dg').datagrid('load', {
                 period: $('#case2-calcresult-txt-period').textbox('getValue'),
-                outlet: $('#case2-calcresult-txt-outlet').textbox('getValue'),
-                loc: $('#case2-calcresult-txt-loc').textbox('getValue'),
-                name: $('#case2-calcresult-txt-name').textbox('getValue'),
+                outlet: $('#case2-calcresult-txt-outlet').textbox('getValue'),  
+                name: $('#case2-calcresult-txt-name').textbox('getValue')
             });
         })
         //end search
@@ -273,11 +264,11 @@
         var v = $('#case2-calcresult-txt-period').val();
         $('#case2-calcresult-ff-period').textbox({
             readonly: false,
-            value: v,
-        }).textbox({ readonly: true, });
+            value: v
+        }).textbox({ readonly: true});
 
         $('#case2-calcresult-dlg-save').dialog({
-            modal: true,
+            modal: true
         }).dialog('open');
     }
 

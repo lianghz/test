@@ -112,35 +112,35 @@
         $('#history-txt-period').textbox({
             prompt: '查询周期',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#history-txt-vno').textbox({
             prompt: '查询版本',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#history-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#history-txt-outlet').textbox({
             prompt: '查询考核售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#history-txt-name').textbox({
             prompt: '查询客户名称',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
@@ -174,10 +174,16 @@
             var row = $('#history-dg').datagrid('getSelected');
             var vno = row['版本'];
             var period = row['周期'];
+            var param = '&';
+            var params = $('#history-dg-win').datagrid("options").queryParams;
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1';
 
-            var param = '?period=' + (period ? period : '') + '&vno=' + (vno ? vno : '');
-            if (!params) param = "";
+            param = '?period=' + (period ? period : '') + '&vno=' + (vno ? vno : '') + param;
             url = "/down/versionsGetHistoryToExcel" + param;
+
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
                 //$.get(result,function(){})
@@ -230,7 +236,7 @@
             var period = row['周期'];
             var description = row['描述'];
             $.get('/versionsGetHistGrid', { 'period': period, 'vno': vno }, function (data) {
-                console.log(data.paramsv1)
+ 
                 var paramsv1 = eval('[' + data.paramsv1 + ']');
                 var paramsv2 = eval('[' + data.paramsv2 + ']');
                 $('#history-dg-win').datagrid({
@@ -243,15 +249,15 @@
                         if (row['考核销量售点'] == row['SAP售点']) {
                             return 'color:blue;';
                         }
-                    },
+                    }
                 });
                 $('#history-dg-win').datagrid({
-                    url: '/version?period=' + period + '&vno=' + vno,
+                    url: '/version?period=' + period + '&vno=' + vno
                 });
 
                 $('#history-win').window({
                     title: '版本' + period + '-' + vno + '-' + description,
-                    minimizable: false,
+                    minimizable: false
                 }).window('open');
                 MaskUtil.unmask();
             });

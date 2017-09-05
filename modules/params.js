@@ -28,12 +28,24 @@ var case2outlets = ["办事处", "售点", "名称", "P1", "P2", "P3", "P4", "P5
 var case2skus = ["产品代码", "产品名称", "产品分类"];
 var case2packages = ["序号", "产品代码", "产品名称"];
 var case2sales = ["办事处", "售点", "名称", "产品代码", "产品名称", "销量"];
-var case2CalcResult = ["售点", "名称", "产品代码", "产品名称", "产品类型", "常备包装的达成100%", "冰柜盘点表", "下家分销表", "目标销量", "实际销量", "销量达成率", "折扣标准（元）", "返还金额","超额销量","超额折扣","实际返还"]
+var case2CalcResult = ["售点", "名称", "产品代码", "产品名称", "产品类型", "常备包装的达成100%", "冰柜盘点表", "下家分销表", "目标销量", "实际销量", "销量达成率", "折扣标准（元）", "返还金额", "超额销量", "超额折扣", "实际返还"]
 var case2Header = {
   'case2checkresult': case2checkresult, 'case2outlets': case2outlets, 'case2skus': case2skus,
   'case2packages': case2packages, 'case2sales': case2sales, 'case2CalcResult': case2CalcResult, 'paramsModelName': paramsModelName
   , 'paramsCollName': paramsCollName, 'agreement': ''
 }
+//case 3
+var case3calcResult = ["机制类型", "BU", "办事处", "合作伙伴售点", "合作伙伴SAP售点", "客户名称", "启动时间", "合同签署开始时间", "合作伙伴类型", "本月下家客户数(≥10PC)", "本月下家客户数是否达标", "淡旺季","目标销量", "上限", "进货量", "督导抽查", "协议是否合格", "返还结果", "备注"];
+var case3outlets = ["机制类型", "BU", "办事处", "售点", "SAP售点", "客户名称","市场区隔", "合作伙伴类型", "启动时间", "折扣标准元/PC", "目标销量", "淡季上限(箱)", "旺季上限(箱)", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
+var case3sales = ["MM售点", "售点名称", "销量"];
+var case3contract = ["办事处", "MM售点", "SAP售点", "客户名称", "渠道", "合同开始时间", "合同结束时间", "是否转换渠道", "合同是否合格（Y/N)"];
+var case3checkresult = ["办事处", "抽查日期", "订单日期", "抽查人", "岗位/职位", "抽查订单数(C)", "差异订单数(D)", "差异率(D/C)", "合作伙伴售点", "合作伙伴名称"];
+var case3active = ["MM售点", "Passed"];
+var case3Header = {
+  'case3calcResult': case3calcResult, 'case3outlets': case3outlets, 'case3sales': case3sales,
+  'case3contract': case3contract, 'case3checkresult': case3checkresult, 'case3active': case3active
+}
+
 
 var FieldDate = ',保存时间,修改时间,';
 var FieldNumber = ',产品代码,序号,';
@@ -88,7 +100,7 @@ function formatTitleGrid(arrs, fieldPrefix, rowspan, colspan, ww) {
       w = "width:50";
     } else if (elm.indexOf("售点") > -1 || elm == '数据类型' || elm == '客户' || elm == '周期') {
       w = "width:100";
-    } else if (elm == '保存时间' || elm == '修改时间'|| elm == '办事处'|| elm == '协议'|| elm == '店名'|| elm == '地址') {
+    } else if (elm == '保存时间' || elm == '修改时间' || elm == '办事处' || elm == '协议' || elm == '店名' || elm == '地址') {
       w = "width:200";
     } else {
       w = "width:" + (elm.length * 15 + 15);
@@ -117,112 +129,13 @@ function formatTitleExcel2(arrs) {
 
 function paramNoDb(resultName, cb) {
   var paramsString = "";
-  switch (resultName) {
-    case 'outlet':
-      paramsString = formatTitle(outlets);
-      break;
-    case 'outlet2':
-      paramsString = formatTitle(outlets2);
-      break;
-    case 'outletGrid':
-      paramsString = formatTitleGrid(outlets);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'outletExcel':
-      paramsString = formatTitleExcel(outlets);
-      break;
-    case 'sales':
-      paramsString = formatTitle(mmsales);
-      break;
-    case 'salesGrid':
-      paramsString = formatTitleGrid(mmsales);
-      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'salesExcel':
-      paramsString = formatTitleExcel(mmsales);
-      break;
-    case 'versions':
-      paramsString = formatTitle(versions);
-      break;
-    case 'versionsGrid':
-      paramsString = formatTitleGrid(versions);
-      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'versionsExcel':
-      paramsString = formatTitleExcel(versions);
-      break;
-    case 'case2checkresult':
-      paramsString = formatTitle(case2checkresult);
-      break;
-    case 'case2checkresultGrid':
-      paramsString = formatTitleGrid(case2checkresult);
-      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2checkresultExcel'://case2checkresultGrid
-      paramsString = formatTitleExcel(case2checkresult);
-      break;
-    case 'case2outlet':
-      paramsString = formatTitle(case2outlets);
-      break;
-    case 'case2outletGrid':
-      paramsString = formatTitleGrid(case2outlets);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2outletExcel':
-      paramsString = formatTitleExcel(case2outlets);
-      break;
-    case 'case2sku':
-      paramsString = formatTitle(case2skus);
-      break;
-    case 'case2skuGrid':
-      paramsString = formatTitleGrid(case2skus);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2skuExcel':
-      paramsString = formatTitleExcel(case2skus);
-      break;
-    case 'case2sales':
-      paramsString = formatTitle(case2sales);
-      break;
-    case 'case2salesGrid':
-      paramsString = formatTitleGrid(case2sales);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2salesExcel':
-      paramsString = formatTitleExcel(case2sales);
-      break;
-    case 'case2package':
-      paramsString = formatTitle(case2packages);
-      break;
-    case 'case2packageGrid':
-      paramsString = formatTitleGrid(case2packages);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2packageExcel':
-      paramsString = formatTitleExcel(case2packages);
-      break;
-    case 'case2calcResult':
-      paramsString = formatTitle(case2CalcResult);
-      break;
-    case 'case2calcResultGrid':
-      paramsString = formatTitleGrid(case2CalcResult);
-      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
-      paramsString = '[' + paramsString + ']';
-      break;
-    case 'case2calcResultExcel':
-      paramsString = formatTitleExcel(case2CalcResult);
-      break;
-    default:
-      paramsString = "";
-      break;
+  var casex = resultName.substring(0, 5);
+  if (casex == 'case2') {
+    paramsString = getCase2String(resultName);
+  } else if (casex == 'case3') {
+    paramsString = getCase3String(resultName);
+  } else {
+    paramsString = getCaseString(resultName);
   }
   //console.log("paramsString"+paramsString);
   cb(paramsString);
@@ -351,6 +264,7 @@ function paramDb(parameterName, resultName, cb) {
 
 };
 
+///取历史表头
 function getHeader(casenum, cb) {
   var parameters = mongoose.model(paramsModelName, ppsSchemas, paramsCollName);//(表名，schema)定义了一个叫ka的model
   parameters.find({ name: 'agreements' }, function (err, docs, docs2) {
@@ -359,6 +273,7 @@ function getHeader(casenum, cb) {
     } else {
       case1Header.agreement = docs[0]['params'];
       case2Header.agreement = docs[0]['params'];
+      case3Header.agreement = docs[0]['params'];
       switch (casenum) {
         case 'case1':
           // console.log("hhhhh1="+JSON.stringify(case1Header))
@@ -366,6 +281,9 @@ function getHeader(casenum, cb) {
           break;
         case 'case2':
           cb(case2Header);
+          break;
+        case 'case3':
+          cb(case3Header);
           break;
       }
     }
@@ -401,6 +319,15 @@ function setheader(casenum, caseheader) {
       case2sales = case2Header.case2sales;
       case2skus = case2Header.case2skus;
       break;
+    case 'case3':
+      case3Header = caseheader;
+      case3calcResult = case3Header.case3calcResult;
+      case3outlets = case3Header.case3outlets;
+      case3sales = case3Header.case3sales;
+      case3contract = case3Header.case3contract;
+      case3checkresult = case3Header.case3checkresult;
+      case3active = case3Header.case3active;
+      break;
   }
 }
 
@@ -420,6 +347,217 @@ function paramNoDbv(resultName, casenum, caseheader, cb) {
   }
   paramNoDb(resultName, cb);
 }
+
+function getCaseString(resultName) {
+  var paramsString = "";
+  switch (resultName) {
+    case 'outlet':
+      paramsString = formatTitle(outlets);
+      break;
+    case 'outlet2':
+      paramsString = formatTitle(outlets2);
+      break;
+    case 'outletGrid':
+      paramsString = formatTitleGrid(outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'outletExcel':
+      paramsString = formatTitleExcel(outlets);
+      break;
+    case 'sales':
+      paramsString = formatTitle(mmsales);
+      break;
+    case 'salesGrid':
+      paramsString = formatTitleGrid(mmsales);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'salesExcel':
+      paramsString = formatTitleExcel(mmsales);
+      break;
+    case 'versions':
+      paramsString = formatTitle(versions);
+      break;
+    case 'versionsGrid':
+      paramsString = formatTitleGrid(versions);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'versionsExcel':
+      paramsString = formatTitleExcel(versions);
+      break;
+    default:
+      paramsString = "";
+      break;
+  }
+  return paramsString;
+}
+
+function getCase2String(resultName) {
+  var paramsString = "";
+  switch (resultName) {
+    case 'case2checkresult':
+      paramsString = formatTitle(case2checkresult);
+      break;
+    case 'case2checkresultGrid':
+      paramsString = formatTitleGrid(case2checkresult);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2checkresultExcel'://case2checkresultGrid
+      paramsString = formatTitleExcel(case2checkresult);
+      break;
+    case 'case2outlet':
+      paramsString = formatTitle(case2outlets);
+      break;
+    case 'case2outletGrid':
+      paramsString = formatTitleGrid(case2outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2outletExcel':
+      paramsString = formatTitleExcel(case2outlets);
+      break;
+    case 'case2sku':
+      paramsString = formatTitle(case2skus);
+      break;
+    case 'case2skuGrid':
+      paramsString = formatTitleGrid(case2skus);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2skuExcel':
+      paramsString = formatTitleExcel(case2skus);
+      break;
+    case 'case2sales':
+      paramsString = formatTitle(case2sales);
+      break;
+    case 'case2salesGrid':
+      paramsString = formatTitleGrid(case2sales);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2salesExcel':
+      paramsString = formatTitleExcel(case2sales);
+      break;
+    case 'case2package':
+      paramsString = formatTitle(case2packages);
+      break;
+    case 'case2packageGrid':
+      paramsString = formatTitleGrid(case2packages);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2packageExcel':
+      paramsString = formatTitleExcel(case2packages);
+      break;
+    case 'case2calcResult':
+      paramsString = formatTitle(case2CalcResult);
+      break;
+    case 'case2calcResultGrid':
+      paramsString = formatTitleGrid(case2CalcResult);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case2calcResultExcel':
+      paramsString = formatTitleExcel(case2CalcResult);
+      break;
+    default:
+      paramsString = "";
+      break;
+  }
+  return paramsString;
+}
+
+function getCase3String(resultName) {
+  var paramsString = "";
+  switch (resultName) {
+    case 'case3checkresult':
+      paramsString = formatTitle(case3checkresult);
+      break;
+    case 'case3checkresultGrid':
+      paramsString = formatTitleGrid(case3checkresult);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3checkresultExcel'://case3checkresultGrid
+      paramsString = formatTitleExcel(case3checkresult);
+      break;
+    case 'case3outlet':
+      paramsString = formatTitle(case3outlets);
+      break;
+    case 'case3outletGrid':
+      paramsString = formatTitleGrid(case3outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3outletExcel':
+      paramsString = formatTitleExcel(case3outlets);
+      break;
+    case 'case3sku':
+      paramsString = formatTitle(case3skus);
+      break;
+    case 'case3skuGrid':
+      paramsString = formatTitleGrid(case3skus);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3skuExcel':
+      paramsString = formatTitleExcel(case3skus);
+      break;
+    case 'case3sales':
+      paramsString = formatTitle(case3sales);
+      break;
+    case 'case3salesGrid':
+      paramsString = formatTitleGrid(case3sales);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3salesExcel':
+      paramsString = formatTitleExcel(case3sales);
+      break;
+    case 'case3active':
+      paramsString = formatTitle(case3active);
+      break;
+    case 'case3activeGrid':
+      paramsString = formatTitleGrid(case3active);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3activeExcel':
+      paramsString = formatTitleExcel(case3active);
+      break;
+    case 'case3contract':
+      paramsString = formatTitle(case3contract);
+      break;
+    case 'case3contractGrid':
+      paramsString = formatTitleGrid(case3contract);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3contractExcel':
+      paramsString = formatTitleExcel(case3contract);
+      break;
+    case 'case3calcResult':
+      paramsString = formatTitle(case3calcResult);
+      break;
+    case 'case3calcResultGrid':
+      paramsString = formatTitleGrid(case3calcResult);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3calcResultExcel':
+      paramsString = formatTitleExcel(case3calcResult);
+      break;
+    default:
+      paramsString = "";
+      break;
+  }
+  return paramsString;
+}
+
+
 
 //// methods-----------------
 var methods = {

@@ -89,28 +89,28 @@
         $('#sales-txt-bu').textbox({
             prompt: '查询BU',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#sales-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#sales-txt-outlet').textbox({
             prompt: '查询SAP售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#sales-txt-name').textbox({
             prompt: '查询店名',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -129,8 +129,11 @@
         //down
         $("#sales-btn-down").click(function () {
             var params = $('#sales-dg').datagrid("options").queryParams;
-            var param = '?bu=' + (params.bu ? params.bu : '') + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
-            if (!params) param = "";
+            var param = '?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1'
             url = "/down/sales" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -143,7 +146,7 @@
         $("#sales-btn-search").click(function () {
             $('#sales-dg').datagrid('load', {
                 //bu: $('#sales-txt-bu').textbox('getValue'),
-                outlet: $('#sales-txt-outlet').textbox('getValue'),
+                outlet: $('#sales-txt-outlet').textbox('getValue')
                 //loc: $('#sales-txt-loc').textbox('getValue'),
                 //name: $('#sales-txt-name').textbox('getValue'),
             });

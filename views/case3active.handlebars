@@ -1,33 +1,34 @@
-<table id="case2checkresult-dg" title="生动化检查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#case2checkresult-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+<table id="case3active-dg" title="活跃客户数" style="width:100%;height:250px;border-top:0px;" toolbar="#case3active-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
 </table>
-<div id="case2checkresult-tbr">
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case2checkresult-dlg').dialog('open')">上传结果</a>
-    <a id="case2checkresult-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+<div id="case3active-tbr">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case3active-dlg').dialog('open')">上传活跃客户数</a>
+    <a id="case3active-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载活跃客户数</a>
     {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
-    <input id="case2checkresult-txt-loc" style="width:120px;height:25px">
-    <input id="case2checkresult-txt-outlet" style="width:120px;height:25px">
-    <input id="case2checkresult-txt-name" style="width:200px;height:25px">
-    <a id="case2checkresult-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />
+    {{!--<input id="case3active-txt-bu" style="width:90px;height:25px">--}}
+    <input id="case3active-txt-outlet" style="width:120px;height:25px">
+    {{!--<input id="case3active-txt-sku" style="width:120px;height:25px">
+    <input id="case3active-txt-name" style="width:200px;height:25px">--}}
+    <a id="case3active-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />
 </div>
-<input id="case2checkresult-params" type="hidden" name="referrer" value="{{params}}">
+<input id="case3active-params" type="hidden" name="referrer" value="{{params}}">
 
-<div id="case2checkresult-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+<div id="case3active-dlg" class="easyui-dialog" title="上传活跃客户数文件" style="width:400px;height:200px;padding:10px" data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
                     text:'上传',
                     iconCls:'icon-ok',
                     handler:function(){
-                        $('#case2checkresult-ff').submit();
+                        $('#case3active-ff').submit();
                     }
                 },{
                     text:'取消',
                     handler:function(){
-                        $('#case2checkresult-dlg').dialog('close')
+                        $('#case3active-dlg').dialog('close')
                     }
                 }]
             ">
-    <form id="case2checkresult-ff" action="/case2/upload/checkresult" method="post" enctype="multipart/form-data">
+    <form id="case3active-ff" action="/case3/upload/active" method="post" enctype="multipart/form-data">
         <table>
             <tr>
                 <td><input name="filename" class="f1 easyui-filebox"></input>
@@ -39,11 +40,11 @@
 </div>
 
 <script>
-    var params = $('#case2checkresult-params').val();
+    var params = $('#case3active-params').val();
     params = eval(params);
     //获取datagrid 数据
-        $('#case2checkresult-dg').datagrid({
-        url: '/case2/checkresult',
+        $('#case3active-dg').datagrid({
+        url: '/case3/active',
         pagePosition: 'bottom',
         pagination: true,
         rownumbers: true,
@@ -85,50 +86,56 @@
     $(function () {
 
         //-----
-
-        $('#case2checkresult-txt-loc').textbox({
+        {{!--$('#case3active-txt-bu').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter'
+                iconCls: 'icon-filter',
+            }]
+        }).textbox('addClearBtn', 'icon-clear');--}}
+
+        $('#case3active-txt-outlet').textbox({
+            prompt: 'MM售点',
+            icons: [{
+                iconCls: 'icon-filter',
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#case2checkresult-txt-outlet').textbox({
-            prompt: '查询售点',
+        {{!--$('#case3active-txt-sku').textbox({
+            prompt: '查询产品编号',
             icons: [{
-                iconCls: 'icon-filter'
+                iconCls: 'icon-filter',
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
-        $('#case2checkresult-txt-name').textbox({
-            prompt: '查询名称',
+        $('#case3active-txt-name').textbox({
+            prompt: '查询产品名称',
             icons: [{
-                iconCls: 'icon-filter'
+                iconCls: 'icon-filter',
             }]
-        }).textbox('addClearBtn', 'icon-clear');
+        }).textbox('addClearBtn', 'icon-clear');--}}
         //------
 
-        $('#case2checkresult-ff').form({
+        $('#case3active-ff').form({
             success: function (data) {
                 $.messager.confirm(data, '是否刷新数据', function (r) {
                     if (r) {
-                        $('#case2checkresult-dg').datagrid('reload');
+                        $('#case3active-dg').datagrid('reload');
                     }
-                    $('#case2checkresult-dlg').dialog('close');
+                    $('#case3active-dlg').dialog('close')
                 });
 
             }
         });
 
         //down
-        $("#case2checkresult-btn-down").click(function () {
-            var params = $('#case2checkresult-dg').datagrid("options").queryParams;
-            var param = '?';
+        $("#case3active-btn-down").click(function () {
+            var params = $('#case3active-dg').datagrid("options").queryParams;
+            var param='?';
             for (key in params) {
-                param += key + '=' + params[key] + '&';
+                param += key + '=' + params[key] + '&a=1';
+
             }
-            param += 'a=1';
-            url = "/case2/down/checkresult" + param;
+            url = "/case3/down/active" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
                 //$.get(result,function(){})
@@ -137,11 +144,9 @@
         })
         //end down
         //search
-        $("#case2checkresult-btn-search").click(function () {
-            $('#case2checkresult-dg').datagrid('load', {
-                outlet: $('#case2checkresult-txt-outlet').textbox('getValue'),
-                loc: $('#case2checkresult-txt-loc').textbox('getValue'),
-                name: $('#case2checkresult-txt-name').textbox('getValue')
+        $("#case3active-btn-search").click(function () {
+            $('#case3active-dg').datagrid('load', {
+                outlet: $('#case3active-txt-outlet').textbox('getValue')
             });
         })
         //end search

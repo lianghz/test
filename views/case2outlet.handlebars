@@ -89,28 +89,28 @@
         $('#case2outlet-txt-bu').textbox({
             prompt: '查询BU',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2outlet-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2outlet-txt-outlet').textbox({
             prompt: '查询售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2outlet-txt-name').textbox({
             prompt: '查询客户名称',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -130,11 +130,11 @@
         //down
         $("#case2outlet-btn-down").click(function () {
             var params = $('#case2outlet-dg').datagrid("options").queryParams;
-            var param='?';
+            var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case2/down/outlet" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -148,7 +148,7 @@
             $('#case2outlet-dg').datagrid('load', {
                 outlet: $('#case2outlet-txt-outlet').textbox('getValue'),
                 loc: $('#case2outlet-txt-loc').textbox('getValue'),
-                name: $('#case2outlet-txt-name').textbox('getValue'),
+                name: $('#case2outlet-txt-name').textbox('getValue')
             });
         })
         //end search

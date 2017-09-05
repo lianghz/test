@@ -11,7 +11,7 @@ var schema = mongoose.Schema();
 var Q = require('q');
 
 function removeSaveData(docs) {
-    var removeDataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+    var removeDataModel = mongoose.model('case3sale', schema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
         saveData(docs);
     });
@@ -20,11 +20,11 @@ function removeSaveData(docs) {
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
-    params.paramNoDb("case2sales", function (result) {
+    params.paramNoDb("case3sales", function (result) {
         SchemaParams = eval("(" + result + ")");
         // console.log('saveData-sales=' + result);
         schema.add(SchemaParams);
-        var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+        var dataModel = mongoose.model('case3sale', schema);//(文档，schema)定义了一个model
         var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
@@ -33,8 +33,8 @@ function saveData(docs) {
                 }
             }
             // console.log('data1='+doc);
-            dataModel.remove({ '产品代码': doc['产品代码'], '售点': doc['售点'] }, function () {
-                dataModel.update({ '产品代码': doc['产品代码'], '售点': doc['售点'] },
+            dataModel.remove({ 'MM售点': doc['MM售点'] }, function () {
+                dataModel.update({ 'MM售点': doc['MM售点'] },
                     doc,
                     { upsert: true },
                     function (err, docs) {
@@ -48,7 +48,7 @@ function saveData(docs) {
 }
 ///获取grid表头格式
 function getGrid(cb) {
-    params.paramNoDb("case2salesGrid", function (result) {
+    params.paramNoDb("case3salesGrid", function (result) {
         cb(result);
     });
 }
@@ -58,38 +58,25 @@ function getData(req, res, cb) {
     var page = parseInt(req.query.page);
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
-    var sku = req.query.sku;
     var name = req.query.name;
-    var loc = req.query.loc;
     var outlet = req.query.outlet;
     var condition = "";
     // console.log("ccsdsds1="+sku);
     if (outlet) {
         if (condition) condition += ","
-        condition += "'售点':/" + outlet + "/";
-        // console.log("ccsdsds="+condition);
-    }
-    if (loc) {
-        if (condition) condition += ","
-        condition += "'办事处':/" + loc + "/";
-        // console.log("ccsdsds="+condition);
-    }
-    if (sku) {
-        if (condition) condition += ","
-        condition += "'产品代码':" + sku;
+        condition += "'MM售点':/" + outlet + "/";
         // console.log("ccsdsds="+condition);
     }
     if (name && name != '') {
         if (condition) condition += ","
-        condition += "'产品名称':/" + name + "/";
-        //console.log("ccc=" + condition);
+        condition += "'售点名称':/" + name + "/";
     }
     // console.log("con1=" + condition);
     condition = eval("({" + condition + "})");
-    params.paramNoDb("case2sales", function (result) {
+    params.paramNoDb("case3sales", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+        var dataModel = mongoose.model('case3sale', schema);//(文档，schema)定义了一个model
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -104,41 +91,26 @@ function getData(req, res, cb) {
 
 ///获取导出到excel的mongodb数据
 function getDataForExcel(req, res, cb) {
-    var sku = req.query.sku;
     var name = req.query.name;
     var outlet = req.query.outlet;
-    var loc = req.query.loc;
     var condition = "";
-    // console.log("ccsdsds1="+sku);
     if (outlet) {
         if (condition) condition += ","
-        condition += "'售点':/" + outlet + "/";
-        // console.log("ccsdsds="+condition);
-    }
-    if (loc) {
-        if (condition) condition += ","
-        condition += "'办事处':/" + loc + "/";
-        // console.log("ccsdsds="+condition);
-    }
-    if (sku) {
-        if (condition) condition += ","
-        condition += "'产品代码':" + sku;
-        // console.log("ccsdsds="+condition);
+        condition += "'MM售点':/" + outlet + "/";
     }
     if (name && name != '') {
         if (condition) condition += ","
-        condition += "'产品名称':/" + name + "/";
-        //console.log("ccc=" + condition);
+        condition += "'售点名称':/" + name + "/";
     }
     condition = eval("({" + condition + "})");
 
-    params.paramNoDb("case2salesExcel", function (result) {
+    params.paramNoDb("case3salesExcel", function (result) {
         var excelHeader;
         excelHeader = result;
-        params.paramNoDb("case2sales", function (result) {
+        params.paramNoDb("case3sales", function (result) {
             SchemaParams = eval("(" + result + ")");//貌似查询的时候不用定义schema格式，返回所有字段
             schema.add(SchemaParams);
-            var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+            var dataModel = mongoose.model('case3sale', schema);//(文档，schema)定义了一个model
             //console.log(condition);
             dataModel.find(condition, function (err, docs) {
                 cb({ "excelHeader": excelHeader, "docs": docs });

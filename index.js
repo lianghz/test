@@ -38,6 +38,7 @@ app.get('/', function (req, res) {
 // add routes
 require('./routes1.js')(app);
 require('./routes2.js')(app);
+require('./routes3.js')(app);
 
 
 

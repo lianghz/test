@@ -2,9 +2,10 @@
 </table>
 <div id="case2package-tbr">
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case2package-dlg').dialog('open')">上传常备包装</a>
-    <a id="case2package-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载常备包装</a>
-    {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
-    {{!--<input id="case2package-txt-bu" style="width:90px;height:25px">
+    <a id="case2package-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载常备包装</a>    {{!--
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
+    {{!--
+    <input id="case2package-txt-bu" style="width:90px;height:25px">
     <input id="case2package-txt-loc" style="width:120px;height:25px">--}}
     <input id="case2package-txt-sku" style="width:120px;height:25px">
     <input id="case2package-txt-name" style="width:200px;height:25px">
@@ -33,7 +34,8 @@
             <tr>
                 <td><input name="filename" class="f1 easyui-filebox"></input>
                 </td>
-                <td>　　先删除原数据</td><td><input name="cbrm" type="checkbox"></td>
+                <td>　　先删除原数据</td>
+                <td><input name="cbrm" type="checkbox"></td>
             </tr>
         </table>
     </form>
@@ -43,7 +45,7 @@
     var params = $('#case2package-params').val();
     params = eval(params);
     //获取datagrid 数据
-        $('#case2package-dg').datagrid({
+    $('#case2package-dg').datagrid({
         url: '/case2/package',
         pagePosition: 'bottom',
         //pagination: true,
@@ -90,14 +92,14 @@
         $('#case2package-txt-sku').textbox({
             prompt: '查询产品编号',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2package-txt-name').textbox({
             prompt: '查询产品名称',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -117,11 +119,11 @@
         //down
         $("#case2package-btn-down").click(function () {
             var params = $('#case2package-dg').datagrid("options").queryParams;
-            var param='?';
+            var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case2/down/package" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -134,7 +136,7 @@
         $("#case2package-btn-search").click(function () {
             $('#case2package-dg').datagrid('load', {
                 sku: $('#case2package-txt-sku').textbox('getValue'),
-                name: $('#case2package-txt-name').textbox('getValue'),
+                name: $('#case2package-txt-name').textbox('getValue')
             });
         })
         //end search

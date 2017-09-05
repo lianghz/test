@@ -1,17 +1,18 @@
 var jsonObj = require("../models/excel.js");
-var checkResult = require("../models/case2/checkResult.js");
-// var setArgeement = require("../models/case2/setArgeement.js");
-var outlet = require("../models/case2/outlet.js");
-var sku = require("../models/case2/sku.js");
-var package = require("../models/case2/package.js");
-var sales = require("../models/case2/sales.js");
-var calcresultJoin = require('../models/case2/calcresultJoin.js');
-var history = require('../models/case2/history.js');
+var checkResult = require("../models/case3/checkResult.js");
+// var setArgeement = require("../models/case3/setArgeement.js");
+var outlet = require("../models/case3/outlet.js");
+var sku = require("../models/case3/sku.js");
+var active = require("../models/case3/active.js");
+var contract = require("../models/case3/contract.js");
+var sales = require("../models/case3/sales.js");
+var calcresultJoin = require('../models/case3/calcresultJoin.js');
+var history = require('../models/case3/history.js');
 
 ///--------------------------------------------------------
 ///上传检查结果excel文件，把excel转JSON，把JSON保存到mongodb
 function checkResultSave(rse, fileName, fields) {
-    var checkResultDocs = jsonObj.ExcelToJson(fileName, "检查结果");
+    var checkResultDocs = jsonObj.ExcelToJson(fileName, "督导抽查结果");
     var cbrm = fields.cbrm;
     if (cbrm == 'on') {
         checkResult.removeSaveData(checkResultDocs);
@@ -24,9 +25,9 @@ function checkResultSave(rse, fileName, fields) {
 
 ///下载checkresult结果
 function checkResultToExcel(req, res) {
-    checkResult.getDataForExcel(req, res, function (docs) {
+    checkResult.getResultForExcel(req, res, function (docs) {
         var now = new Date();
-        var fileName = "检查结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        var fileName = "督导抽查结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
@@ -41,10 +42,10 @@ function checkResultGetData(req, res) {
     });
 }
 
-function checkResultGetGrid(req, res) {
+function checkResultGrid(req, res) {
     checkResult.getGrid(function (docs) {
         // console.log(docs);
-        res.render('case2checkresult', { layout: null, params: docs });
+        res.render('case3checkresult', { layout: null, params: docs });
     });
 }
 
@@ -80,10 +81,10 @@ function outletGetData(req, res) {
     });
 }
 
-function outletGetGrid(req, res) {
+function outletGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2outlet', { layout: null, params: docs });
+        res.render('case3outlet', { layout: null, params: docs });
     });
 }
 ///------------
@@ -119,32 +120,32 @@ function skuGetData(req, res) {
     });
 }
 
-function skuGetGrid(req, res) {
+function skuGrid(req, res) {
     sku.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2sku', { layout: null, params: docs });
+        res.render('case3sku', { layout: null, params: docs });
     });
 }
 ///------------
 
-///----package-----
-function packageSaveData(rse, fileName, fields) {
+///----active-----
+function activeSaveData(rse, fileName, fields) {
     //console.log('setfilename=' + fileName);
-    var docs = jsonObj.ExcelToJson(fileName, "常备包装");
+    var docs = jsonObj.ExcelToJson(fileName, "活跃客户数");
     var cbrm = fields.cbrm;
     if (cbrm == 'on') {
-        package.removeSaveData(docs);
+        active.removeSaveData(docs);
     }
     else {
-        package.saveData(docs);
+        active.saveData(docs);
     }
     rse.send("数据上传更新完成！");
 }
 
-function packageDataToExcel(req, res) {
-    package.getDataForExcel(req, res, function (docs) {
+function activeDataToExcel(req, res) {
+    active.getDataForExcel(req, res, function (docs) {
         var now = new Date();
-        var fileName = "常备包装" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        var fileName = "活跃客户数" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
@@ -152,20 +153,57 @@ function packageDataToExcel(req, res) {
     })
 }
 
-function packageGetData(req, res) {
-    package.getData(req, res, function (docs) {
+function activeGetData(req, res) {
+    active.getData(req, res, function (docs) {
         res.send(docs);
     });
 }
 
-function packageGetGrid(req, res) {
-    package.getGrid(function (docs) {
+function activeGrid(req, res) {
+    active.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2package', { layout: null, params: docs });
+        res.render('case3active', { layout: null, params: docs });
     });
 }
 ///------------
+///----contract-----
+function contractSaveData(rse, fileName, fields) {
+    //console.log('setfilename=' + fileName);
+    var docs = jsonObj.ExcelToJson(fileName, "合同检查");
+    var cbrm = fields.cbrm;
+    if (cbrm == 'on') {
+        contract.removeSaveData(docs);
+    }
+    else {
+        contract.saveData(docs);
+    }
+    rse.send("数据上传更新完成！");
+}
 
+function contractDataToExcel(req, res) {
+    contract.getDataForExcel(req, res, function (docs) {
+        var now = new Date();
+        var fileName = "合同检查" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
+            res.send(filepath);
+        });
+
+    })
+}
+
+function contractGetData(req, res) {
+    contract.getData(req, res, function (docs) {
+        res.send(docs);
+    });
+}
+
+function contractGrid(req, res) {
+    contract.getGrid(function (docs) {
+        //console.log("d1=" + docs);
+        res.render('case3contract', { layout: null, params: docs });
+    });
+}
+///------------
 ///----sales-----
 function salesSaveData(rse, fileName, fields) {
     //console.log('setfilename=' + fileName);
@@ -198,18 +236,18 @@ function salesGetData(req, res) {
     });
 }
 
-function salesGetGrid(req, res) {
+function salesGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2sales', { layout: null, params: docs });
+        res.render('case3sales', { layout: null, params: docs });
     });
 }
 ///------------
 ///----calc
-function calcResultGetGrid(req, res) {
+function calcResultGrid(req, res) {
     calcresultJoin.getGrid(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case2calcResult', { layout: null, params: docs });
+        res.render('case3calcResult', { layout: null, params: docs });
     });
 }
 
@@ -236,7 +274,7 @@ function calcResultDataToExcel(req, res) {
         var now = new Date();
         var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         // console.log("docs="+docs);
-        jsonObj.case2calcResultjsonToExcel(docs, fileName, function cb(filepath) {
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
 
@@ -244,11 +282,11 @@ function calcResultDataToExcel(req, res) {
 }
 
 //histroy
-function versionsGetGrid(req, res) {
+function versionsGrid(req, res) {
     history.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case2history', { layout: null, params: result, paramsv1: result2 });
+        res.render('case3history', { layout: null, params: result, paramsv1: result2 });
     });
 }
 
@@ -268,7 +306,7 @@ function versionsGetHistoryToExcel(req, res) {
     history.getDataHistoryForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "计算结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
-        jsonObj.case2calcResultjsonToExcel(docs, fileName, function cb(filepath) {
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
             res.send(filepath);
         });
 
@@ -280,31 +318,35 @@ var methods = {
     'checkResultSave': checkResultSave,
     'checkResultToExcel': checkResultToExcel,
     'checkResultGetData': checkResultGetData,
-    'checkResultGetGrid': checkResultGetGrid,
+    'checkResultGrid': checkResultGrid,
     'outletSaveData': outletSaveData,
     'outletDataToExcel': outletDataToExcel,
     'outletGetData': outletGetData,
-    'outletGetGrid': outletGetGrid,
+    'outletGrid': outletGrid,
     'skuSaveData': skuSaveData,
     'skuDataToExcel': skuDataToExcel,
     'skuGetData': skuGetData,
-    'skuGetGrid': skuGetGrid,
-    'packageSaveData': packageSaveData,
-    'packageDataToExcel': packageDataToExcel,
-    'packageGetData': packageGetData,
-    'packageGetGrid': packageGetGrid,
+    'skuGrid': skuGrid,
+    'activeSaveData': activeSaveData,
+    'activeDataToExcel': activeDataToExcel,
+    'activeGetData': activeGetData,
+    'activeGrid': activeGrid,
     'salesSaveData': salesSaveData,
     'salesDataToExcel': salesDataToExcel,
     'salesGetData': salesGetData,
-    'salesGetGrid': salesGetGrid,
-    'calcResultGetGrid': calcResultGetGrid,
+    'salesGrid': salesGrid,
+    'calcResultGrid': calcResultGrid,
     'getCalcResultView': getCalcResultView,
     'checkVersion': checkVersion,
-    'versionsGetGrid': versionsGetGrid,
+    'versionsGrid': versionsGrid,
     'versionsGetHistory': versionsGetHistory,
     'versionsGetData': versionsGetData,
     'calcResultDataToExcel': calcResultDataToExcel,
     'versionsGetHistoryToExcel': versionsGetHistoryToExcel,
+    'contractSaveData': contractSaveData,
+    'contractDataToExcel': contractDataToExcel,
+    'contractGetData': contractGetData,
+    'contractGrid': contractGrid,
 };
 
 module.exports = methods;

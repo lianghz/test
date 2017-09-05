@@ -97,7 +97,7 @@ function getDataForExcel(req, res, cb) {
     var condition = "";
     if (sku && sku != '') {
         if (condition) condition += ","
-        condition += "'产品代码':/" + sku + "/";
+        condition += "'产品代码':" + sku;
         //console.log("ccc=" + condition);
     }
     if (name && name != '') {

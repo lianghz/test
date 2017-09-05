@@ -12,7 +12,7 @@ var schema = mongoose.Schema();
 ///获取grid表头格式
 // function getGrid(cb) {
 //     params.paramNoDb("versionsGrid", function (result) {
-//         params.paramNoDb('case2calcResultGrid', function (result2) {
+//         params.paramNoDb('case3calcResultGrid', function (result2) {
 //             // console.log(result2);
 //             cb(result, result2);
 //         })
@@ -23,13 +23,13 @@ function getGrid(req, res, cb) {
     var period = req.query.period;
     var vno = req.query.vno;
     var condition = "";
-    var collection = 'case2result' + period + 'v' + vno;
+    var collection = 'case3result' + period + 'v' + vno;
     // console.log('collection='+collection)
     condition = eval("({" + condition + "})");
     var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
     params.paramNoDb("versionsGrid", function (result1) {//历史清单表头
         dataModel.find({ 'collname': 'header' }, function (err, header) {//历史表头参数
-            params.paramNoDbv('case2calcResultGrid', 'case2',header, function (result2) {
+            params.paramNoDbv('case3calcResultGrid', 'case3', header, function (result2) {
                 // console.log("rrrrrrrr="+header)
                 cb(result1, result2);
 
@@ -44,29 +44,37 @@ function getDataHistoryForExcel(req, res, cb) {
     var loc = req.query.loc;
     var outlet = req.query.outlet;
     var name = req.query.name;
+    var bu = req.query.bu;
+    var type = req.query.type;
     var condition = "";
+    if (bu) {
+        condition += "'BU':/" + bu + "/";
+    }
+    if (type) {
+        if (condition) condition += ","
+        condition += "'机制类型':/" + type + "/";
+    }
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";
     }
     if (outlet) {
         if (condition) condition += ","
-        condition += "'售点':'" + outlet + "'";
+        condition += "'售点':/" + outlet + "/";
     }
+
     if (name) {
         if (condition) condition += ","
-        condition += "'名称':/" + name + "/";
-
+        condition += "'客户名称':/" + name + "/";
     }
-
-    var collection = 'case2result' + period + 'v' + vno;
+    var collection = 'case3result' + period + 'v' + vno;
     var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
     dataModel.find({ 'collname': 'header' }, function (err, caseheader) {
         // console.log('aaaa='+caseheader);
-        params.paramNoDbv('case2calcResultExcel', 'case2',caseheader, function (result) {
+        params.paramNoDbv('case3calcResultExcel', 'case3', caseheader, function (result) {
             var excelHeader;
             excelHeader = result;
-            
+
             condition = eval("({'collname':'body'," + condition + "})");
             dataModel.find(condition, function (err, docs) {
                 cb({ "excelHeader": excelHeader, "docs": docs });
@@ -97,7 +105,7 @@ function getData(req, res, cb) {
     params.paramNoDb("versions", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model('case2version2', schema, 'case2versions');//(文档，schema)定义了一个model
+        var dataModel = mongoose.model('case3version2', schema, 'case3versions');//(文档，schema)定义了一个model
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
@@ -116,7 +124,16 @@ function getDataHistory(req, res, cb) {
     var loc = req.query.loc;
     var outlet = req.query.outlet;
     var name = req.query.name;
+    var bu = req.query.bu;
+    var type = req.query.type;
     var condition = "";
+    if (bu) {
+        condition += "'BU':/" + bu + "/";
+    }
+    if (type) {
+        if (condition) condition += ","
+        condition += "'机制类型':/" + type + "/";
+    }
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";
@@ -125,24 +142,26 @@ function getDataHistory(req, res, cb) {
         if (condition) condition += ","
         condition += "'售点':/" + outlet + "/";
     }
+
     if (name) {
         if (condition) condition += ","
-        condition += "'名称':/" + name + "/";
+        condition += "'客户名称':/" + name + "/";
     }
-    var collection = 'case2result' + period + 'v' + vno;
+
+    var collection = 'case3result' + period + 'v' + vno;
 
 
     // console.log("col=" + condition);
     // condition = eval("({" + condition + "})");
     condition = eval("({'collname':'body'," + condition + "})");
-        // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
-        // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
-        dataModel.find(condition, function (err, docs) {
-            var totalDocs = JSON.stringify(docs)//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
-            // console.log("c=" + totalDocs);
-            cb(totalDocs);
-        })
+    // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
+    // CheckResultSchema.add(SchemaParams);
+    var dataModel = mongoose.model(collection, schema, collection);//(文档，schema)定义了一个model
+    dataModel.find(condition, function (err, docs) {
+        var totalDocs = JSON.stringify(docs)//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
+        // console.log("c=" + totalDocs);
+        cb(totalDocs);
+    })
 }
 
 ///获取导出到excel的mongodb数据
@@ -183,6 +202,6 @@ var methods = {
     'getData': getData,
     'getDataForExcel': getDataForExcel,
     'getDataHistory': getDataHistory,
-    'getDataHistoryForExcel':getDataHistoryForExcel,
+    'getDataHistoryForExcel': getDataHistoryForExcel,
 };
 module.exports = methods;

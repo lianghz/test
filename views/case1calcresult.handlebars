@@ -121,35 +121,35 @@
         $('#calcresult-txt-period').textbox({
             value: new Date().format("yyyyMM"),
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#calcresult-txt-bu').textbox({
             prompt: '查询BU',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#calcresult-txt-loc').textbox({
             prompt: '查询办事处',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#calcresult-txt-outlet').textbox({
             prompt: '查询考核售点',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#calcresult-txt-name').textbox({
             prompt: '查询店名',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -186,8 +186,12 @@
         $("#calcresult-btn-down").click(function () {
             MaskUtil.mask();
             var params = $('#calcresult-dg').datagrid("options").queryParams;
-            var param = '?period=' + (params.period ? params.period : $('#calcresult-txt-period').textbox('getValue')) + '&outlet=' + (params.outlet ? params.outlet : '') + '&loc=' + (params.loc ? params.loc : '') + '&name=' + (params.name ? params.name : '');
-            if (!params) param = "";
+            var param = '?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1'
+
             url = "/down/calcresult" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -202,7 +206,7 @@
                 period: $('#calcresult-txt-period').textbox('getValue'),
                 outlet: $('#calcresult-txt-outlet').textbox('getValue'),
                 loc: $('#calcresult-txt-loc').textbox('getValue'),
-                name: $('#calcresult-txt-name').textbox('getValue'),
+                name: $('#calcresult-txt-name').textbox('getValue')
             });
         })
         //end search

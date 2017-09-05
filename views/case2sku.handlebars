@@ -90,14 +90,14 @@
         $('#case2sku-txt-sku').textbox({
             prompt: '查询产品编号',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case2sku-txt-name').textbox({
             prompt: '查询产品名称',
             icons: [{
-                iconCls: 'icon-filter',
+                iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
         //------
@@ -117,11 +117,11 @@
         //down
         $("#case2sku-btn-down").click(function () {
             var params = $('#case2sku-dg').datagrid("options").queryParams;
-            var param='?';
+            var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case2/down/sku" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
@@ -134,7 +134,7 @@
         $("#case2sku-btn-search").click(function () {
             $('#case2sku-dg').datagrid('load', {
                 sku: $('#case2sku-txt-sku').textbox('getValue'),
-                name: $('#case2sku-txt-name').textbox('getValue'),
+                name: $('#case2sku-txt-name').textbox('getValue')
             });
         })
         //end search

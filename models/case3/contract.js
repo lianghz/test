@@ -8,10 +8,12 @@ var params = require("../../modules/params.js");
 var mongoose = require('mongoose');
 var SchemaParams;
 var schema = mongoose.Schema();
+var dataModel = mongoose.model('case3contract', schema);//(文档，schema)定义了一个model
+var tempColl = require("./tempCollection.js");
 var Q = require('q');
 
 function removeSaveData(docs) {
-    var removeDataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+    var removeDataModel = mongoose.model('case3contract', schema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
         saveData(docs);
     });
@@ -20,11 +22,11 @@ function removeSaveData(docs) {
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
-    params.paramNoDb("case2sales", function (result) {
+    params.paramNoDb("case3contract", function (result) {
         SchemaParams = eval("(" + result + ")");
-        // console.log('saveData-sales=' + result);
+        //console.log('saveData=' + result);
         schema.add(SchemaParams);
-        var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+        // var dataModel = mongoose.model('case3contract', schema);//(文档，schema)定义了一个model
         var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
@@ -32,23 +34,33 @@ function saveData(docs) {
                     doc = JSON.parse(JSON.stringify(doc).replace(key, key2));
                 }
             }
-            // console.log('data1='+doc);
-            dataModel.remove({ '产品代码': doc['产品代码'], '售点': doc['售点'] }, function () {
-                dataModel.update({ '产品代码': doc['产品代码'], '售点': doc['售点'] },
-                    doc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        }
-                    });
+            return Q.Promise(function (resolve, reject) {
+                dataModel.remove({ 'MM售点': doc['MM售点'] }, function () {
+                    dataModel.update({ 'MM售点': doc['MM售点'] },
+                        doc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                            resolve();
+                        });
+                });
+                // console.log('adsfsf2');
             });
+            
         });
+        Q.all(promises).then(function () {
+            tempColl.createTempOutlet(function (msg) {
+            })
+        });
+
+
     });
 }
 ///获取grid表头格式
 function getGrid(cb) {
-    params.paramNoDb("case2salesGrid", function (result) {
+    params.paramNoDb("case3contractGrid", function (result) {
         cb(result);
     });
 }
@@ -58,45 +70,37 @@ function getData(req, res, cb) {
     var page = parseInt(req.query.page);
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
-    var sku = req.query.sku;
-    var name = req.query.name;
     var loc = req.query.loc;
+    var name = req.query.name;
     var outlet = req.query.outlet;
     var condition = "";
     // console.log("ccsdsds1="+sku);
-    if (outlet) {
-        if (condition) condition += ","
-        condition += "'售点':/" + outlet + "/";
-        // console.log("ccsdsds="+condition);
-    }
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";
-        // console.log("ccsdsds="+condition);
     }
-    if (sku) {
+    if (name) {
         if (condition) condition += ","
-        condition += "'产品代码':" + sku;
-        // console.log("ccsdsds="+condition);
+        condition += "'客户名称':/" + name + "/";
     }
-    if (name && name != '') {
+
+    if (outlet) {
         if (condition) condition += ","
-        condition += "'产品名称':/" + name + "/";
-        //console.log("ccc=" + condition);
+        condition += "'MM售点':/" + outlet + "/";
     }
     // console.log("con1=" + condition);
     condition = eval("({" + condition + "})");
-    params.paramNoDb("case2sales", function (result) {
+    params.paramNoDb("case3contract", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
-        var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+
         dataModel.count(condition, function (err, count) {
             var total = count;
             dataModel.find(condition, function (err, docs) {
-                var totalDocs = "{\"total\":" + total + ",\"rows\":" + JSON.stringify(docs) + "}"//如果直接加上docs原本是双引号的结果便成单引号，导致easyui grid不能显示。
-                //res.send(totalDocs);
+                //var totalDocs = JSON.stringify(docs);
+                var totalDocs = "{\"total\":" + total + ",\"rows\":" + JSON.stringify(docs) + "}"
                 cb(totalDocs);
-            }).limit(rows).skip(skip);
+            }).sort('MM售点').limit(rows).skip(skip);
         });
 
     });
@@ -104,41 +108,33 @@ function getData(req, res, cb) {
 
 ///获取导出到excel的mongodb数据
 function getDataForExcel(req, res, cb) {
-    var sku = req.query.sku;
+    var loc = req.query.loc;
     var name = req.query.name;
     var outlet = req.query.outlet;
-    var loc = req.query.loc;
     var condition = "";
     // console.log("ccsdsds1="+sku);
-    if (outlet) {
-        if (condition) condition += ","
-        condition += "'售点':/" + outlet + "/";
-        // console.log("ccsdsds="+condition);
-    }
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";
-        // console.log("ccsdsds="+condition);
     }
-    if (sku) {
+    if (name) {
         if (condition) condition += ","
-        condition += "'产品代码':" + sku;
-        // console.log("ccsdsds="+condition);
+        condition += "'客户名称':/" + name + "/";
     }
-    if (name && name != '') {
+
+    if (outlet) {
         if (condition) condition += ","
-        condition += "'产品名称':/" + name + "/";
-        //console.log("ccc=" + condition);
+        condition += "'MM售点':/" + outlet + "/";
     }
     condition = eval("({" + condition + "})");
 
-    params.paramNoDb("case2salesExcel", function (result) {
+    params.paramNoDb("case3contractExcel", function (result) {
         var excelHeader;
         excelHeader = result;
-        params.paramNoDb("case2sales", function (result) {
+        params.paramNoDb("case3contract", function (result) {
             SchemaParams = eval("(" + result + ")");//貌似查询的时候不用定义schema格式，返回所有字段
             schema.add(SchemaParams);
-            var dataModel = mongoose.model('case2sale', schema);//(文档，schema)定义了一个model
+            // var dataModel = mongoose.model('case3contract', schema);//(文档，schema)定义了一个model
             //console.log(condition);
             dataModel.find(condition, function (err, docs) {
                 cb({ "excelHeader": excelHeader, "docs": docs });
