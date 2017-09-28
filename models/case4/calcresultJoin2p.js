@@ -37,43 +37,21 @@ function toJson(element) {
 
 checkOutlets = toJson(checkOutlets);
 
-outletSchema.methods.getCheckResult = function (cb) {
-    checkResultModel.findOne({ '合作伙伴售点': JSON.parse(JSON.stringify(this))['售点'] }, cb);
-};
 outletSchema.methods.getSales = function (cb) {
-    salesModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': endPeriod }, cb);
-};
-
-outletSchema.methods.getDeliver = function (cb) {
-    deliverModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': endPeriod }, cb);
+    salesModel.find({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': endPeriod }, cb);
 };
 
 //上月销量
 outletSchema.methods.getSalesPer = function (cb) {
-    salesModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': startPeriod }, cb);
-};
-//上月配送量
-outletSchema.methods.getDeliverPer = function (cb) {
-    deliverModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': startPeriod }, cb);
-};
-
-outletSchema.methods.getActive = function (cb) {
-    activeModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'] }, cb);
-};
-
-outletSchema.methods.getContract = function (cb) {
-    contractModel.findOne({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'] }, cb);
+    salesModel.find({ 'MM售点': JSON.parse(JSON.stringify(this))['售点'], '周期': startPeriod }, cb);
 };
 
 
-var salesModel = mongoose.model('case3sales', salesSchema, 'case3sales');
-var deliverModel = mongoose.model('case3deliver2', deliverSchema, 'case3delivers');
-var checkResultModel = mongoose.model('case3checkresult2', checkResultSchema, 'case3checkresults');
-var activeModel = mongoose.model('case3active2', activeSchema, 'case3actives');
-var contractModel = mongoose.model('case3contract2', contractSchema, 'case3contracts');
-var versionResultModel = mongoose.model('case3versionResult2', versionResultSchema, 'case3versionResults');
-var versionModel = mongoose.model('case3version', versionSchema, 'case3versions');
-var outletModel = mongoose.model('case3outlet2', outletSchema, 'case3outlettemps');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
+var salesModel = mongoose.model('case4sales2p', salesSchema, 'case4sales');
+var versionResultModel = mongoose.model('case4versionResult2p', versionResultSchema, 'case4versionResults');
+var versionModel = mongoose.model('case4version2p', versionSchema, 'case4versions');
+var outletModel = mongoose.model('case4outlet2p', outletSchema, 'case4outlettemps');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
+var packageModel = mongoose.model('case4package2p', salesSchema, 'case4packages');
 
 function getCalcResult(req, res, cb) {
     getCalcResultDate(req, res, 'grid', cb);
@@ -82,7 +60,7 @@ function getCalcResult(req, res, cb) {
 ///获取导出到excel的mongodb数据
 
 function getDataForExcel(req, res, cb) {
-    params.paramNoDb("case3calcResultExcel", function (result) {
+    params.paramNoDb("case4calcResultExcel", function (result) {
         getCalcResultDate(req, res, 'excel', function (docs) {
             cb({ "excelHeader": result, "docs": docs });
         });
@@ -96,7 +74,6 @@ function getCalcResultDate(req, res, dataType, cb) {
     var period2 = req.body.period;//当月的周期YYYYMM
 
     var loc = req.body.loc;
-    var type = req.body.type;
     var bu = req.body.bu;
     var outlet = req.body.outlet;
     var name = req.body.name;
@@ -108,7 +85,6 @@ function getCalcResultDate(req, res, dataType, cb) {
         loc = req.query.loc;
         outlet = req.query.outlet;
         name = req.query.name;
-        type = req.query.type;
         bu = req.query.bu;
     }
 
@@ -130,10 +106,6 @@ function getCalcResultDate(req, res, dataType, cb) {
     var condition = "";
     if (bu) {
         condition += "'BU':/" + bu + "/";
-    }
-    if (type) {
-        if (condition) condition += ","
-        condition += "'机制类型':/" + type + "/";
     }
     if (loc) {
         if (condition) condition += ","
@@ -165,20 +137,6 @@ function getCalcResultDate(req, res, dataType, cb) {
                 return Q.Promise(function (resolve, reject) {
                     outlet.getCheckResult(function (err, checkResult) {
                         outlet.getSales(function (err, sales) {
-                            outlet.getDeliver(function (err, deliver) {
-                                outlet.getSalesPer(function (err, salesPer) {
-                                    outlet.getDeliverPer(function (err, deliverPer) {
-                                        outlet.getActive(function (err, active) {
-                                            outlet.getContract(function (err, contract) {
-                                                outlet = getCalcResultViewModel(outlet, checkResult, sales, active, contract, period, period2, rowId, deliver, deliverPer, salesPer);
-                                                rowId++;
-                                                docs.push(outlet);
-                                                resolve();
-                                            });
-                                        });
-                                    });
-                                });
-                            });
                         });
                     });
                 });
@@ -327,12 +285,12 @@ function getCalcResultViewModel(outlet, checkResult, sales, active, contract, pe
     });
 }
 
-function savecase3Version(req, res, cb) {
+function savecase4Version(req, res, cb) {
     var period = req.body.period;
     var vno = req.body.vno;
     var vname = req.body.vname;
-    var collectionName = 'case3result' + period + 'v' + vno;
-    var collectionsaveName = 'case3saveresult' + period + 'v' + vno;
+    var collectionName = 'case4result' + period + 'v' + vno;
+    var collectionsaveName = 'case4saveresult' + period + 'v' + vno;
     var vdoc = { "周期": period, "版本": vno, "描述": vname, "保存时间": Date(), "修改时间": Date(), "操作人": "", "状态": 1 };
     vdoc = toJson(vdoc);
     // console.log('vdoc=' + vdoc);
@@ -349,7 +307,7 @@ function savecase3Version(req, res, cb) {
                     docs[key] = _.extend({ 'collname': 'body' }, docs[key]);
                 }
 
-                params.getHeader('case3', function (header) {
+                params.getHeader('case4', function (header) {
                     docs.unshift({ 'name': 'agreements', 'params': header.agreement });
                     docs.unshift({ 'collname': 'header', 'params': header });
                     nonKaModel.collection.insert(docs, function (err, d) {
@@ -379,11 +337,11 @@ function checkVersion(req, res, cb) {
     var vno = req.body.vno;
     var over = req.body.over;
     if (over == 'ok') {
-        savecase3Version(req, res, cb);
+        savecase4Version(req, res, cb);
     } else {
         versionModel.count({ '周期': period, '版本': vno }, function (err, count) {
             if (count == 0) {
-                savecase3Version(req, res, cb);
+                savecase4Version(req, res, cb);
             } else {
                 cb("该版本已经存在,是否覆盖")
             }
@@ -393,7 +351,7 @@ function checkVersion(req, res, cb) {
 
 ///获取grid表头格式
 function getGrid(cb) {
-    params.paramNoDb("case3calcResultGrid", function (result) {
+    params.paramNoDb("case4calcResultGrid", function (result) {
         cb(result);
     });
 }
@@ -401,7 +359,7 @@ function getGrid(cb) {
 // cb({ "excelHeader": excelHeader, "docs": docs });
 var methods = {
     'getCalcResult': getCalcResult,
-    'savecase3Version': savecase3Version,
+    'savecase4Version': savecase4Version,
     'checkVersion': checkVersion,
     'getDataForExcel': getDataForExcel,
     'getGrid': getGrid

@@ -10,7 +10,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.checkResultSave(res, filepath,fields);
+            controller.checkResultSave(res, filepath, fields);
         });
     });
     app.get('/case3/down/checkresult', function (req, res) {
@@ -29,7 +29,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.outletSaveData(res, filepath,fields);
+            controller.outletSaveData(res, filepath, fields);
         });
     });
     app.get('/case3/down/outlet', function (req, res) {
@@ -48,7 +48,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.skuSaveData(res, filepath,fields);
+            controller.skuSaveData(res, filepath, fields);
         });
     });
     app.get('/case3/down/sku', function (req, res) {
@@ -67,7 +67,7 @@ module.exports = function (app) {
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.activeSaveData(res, filepath,fields);
+            controller.activeSaveData(res, filepath, fields);
         });
     });
     app.get('/case3/down/active', function (req, res) {
@@ -80,13 +80,13 @@ module.exports = function (app) {
         controller.activeGetData(req, res);
     });
 
- //--contract
+    //--contract
     app.post('/case3/upload/contract', function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.contractSaveData(res, filepath,fields);
+            controller.contractSaveData(res, filepath, fields);
         });
     });
     app.get('/case3/down/contract', function (req, res) {
@@ -97,14 +97,14 @@ module.exports = function (app) {
     });
     app.get('/case3/contract', function (req, res) {
         controller.contractGetData(req, res);
-    });    
+    });
     //--sales
     app.post('/case3/upload/sales', function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
             if (err) return res.redirect(303, '/error');
             var filepath = files.filename.path;
-            controller.salesSaveData(res, filepath,fields);
+            controller.salesSaveData(res, filepath, fields);
         });
     });
     app.get('/case3/down/sales', function (req, res) {
@@ -125,10 +125,10 @@ module.exports = function (app) {
         controller.getCalcResultView(req, res);
     });
 
-        app.post('/case3/saveversion', function (req, res) {
+    app.post('/case3/saveversion', function (req, res) {
         controller.checkVersion(req, res);
     });
-   app.get('/case3/down/calcresult', function (req, res) {
+    app.get('/case3/down/calcresult', function (req, res) {
         controller.calcResultDataToExcel(req, res);
     });
 
@@ -150,5 +150,23 @@ module.exports = function (app) {
 
     app.get('/case3/down/versionsGetHistoryToExcel', function (req, res) {
         controller.versionsGetHistoryToExcel(req, res);
+    });
+    //--deliver
+    app.post('/case3/upload/deliver', function (req, res) {
+        var form = new formidable.IncomingForm();
+        form.parse(req, function (err, fields, files) {
+            if (err) return res.redirect(303, '/error');
+            var filepath = files.filename.path;
+            controller.deliverSaveData(res, filepath, fields);
+        });
+    });
+    app.get('/case3/down/deliver', function (req, res) {
+        controller.deliverDataToExcel(req, res);
+    });
+    app.get('/case3/delivergrid', function (req, res) {
+        controller.deliverGrid(req, res);
+    });
+    app.get('/case3/deliver', function (req, res) {
+        controller.deliverGetData(req, res);
     });
 }

@@ -35,16 +35,27 @@ var case2Header = {
   , 'paramsCollName': paramsCollName, 'agreement': ''
 }
 //case 3
-var case3calcResult = ["机制类型", "BU", "办事处", "合作伙伴售点", "合作伙伴SAP售点", "客户名称", "启动时间", "合同签署开始时间", "合作伙伴类型", "本月下家客户数(≥10PC)", "本月下家客户数是否达标", "淡旺季","目标销量", "上限", "进货量", "督导抽查", "协议是否合格", "返还结果", "备注"];
+var case3calcResult = ["机制类型", "BU", "办事处", "合作伙伴售点", "合作伙伴SAP售点", "客户名称", "市场区隔","启动时间", 
+"合同签署开始时间", "合作伙伴类型", "本月下家客户数(≥10PC)", "本月下家客户数是否达标", "淡旺季","目标销量", "上限","2个月进货量" ,"2个月配送量","2个月透明度",
+"进货量","配送量","透明度", "督导抽查", "协议是否合格", "返还结果", "备注"];
 var case3outlets = ["机制类型", "BU", "办事处", "售点", "SAP售点", "客户名称","市场区隔", "合作伙伴类型", "启动时间", "折扣标准元/PC", "目标销量", "淡季上限(箱)", "旺季上限(箱)", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
-var case3sales = ["MM售点", "售点名称", "销量"];
+var case3sales = ["周期","MM售点", "售点名称", "销量"];
+var case3deliver = ["周期","MM售点", "售点名称", "配送量"];
 var case3contract = ["办事处", "MM售点", "SAP售点", "客户名称", "渠道", "合同开始时间", "合同结束时间", "是否转换渠道", "合同是否合格（Y/N)"];
 var case3checkresult = ["办事处", "抽查日期", "订单日期", "抽查人", "岗位/职位", "抽查订单数(C)", "差异订单数(D)", "差异率(D/C)", "合作伙伴售点", "合作伙伴名称"];
 var case3active = ["MM售点", "Passed"];
 var case3Header = {
   'case3calcResult': case3calcResult, 'case3outlets': case3outlets, 'case3sales': case3sales,
-  'case3contract': case3contract, 'case3checkresult': case3checkresult, 'case3active': case3active
+  'case3contract': case3contract, 'case3checkresult': case3checkresult, 'case3active': case3active,
+  'case3deliver':case3deliver
 }
+
+//case 4
+var case4calcResult = ["BU","办事处","MM售点","SAP售点","经销商","目标(PC)","淡旺季","其它产品","魔爪","B项：纯悦","B项：怡泉+C","合计","进货达标SKU数","C项：淡旺季进货是否达标","A项：销量达成率","折扣标准：销量完成≥100%","折扣标准：魔爪","折扣标准：A项、B项、C项","计算金额","魔爪计算金额","合计金额","备注"];
+var case4outlets = ["BU","办事处","MM售点","SAP售点","客户名称","A项折扣标准元/PC","ABC项折扣标准","ABC项折扣标准(2P)","每个SKU进货量","进货SKU数要求(淡季)","进货SKU数要求(旺季)","P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P1目标","P2目标","P3目标","P4目标","P5目标","P6目标","P7目标","P8目标","P9目标","P10目标","P11目标","P12目标"];
+var case4sales = ["周期","MM售点","产品代码","产品名称","销量"];
+var case4package = ["包装","产品代码","产品名称","目标销量"];
+var case4Header = {'case4calcResult': case4calcResult, 'case4outlets': case4outlets, 'case4sales': case4sales,'case4package': case4package}
 
 
 var FieldDate = ',保存时间,修改时间,';
@@ -134,7 +145,9 @@ function paramNoDb(resultName, cb) {
     paramsString = getCase2String(resultName);
   } else if (casex == 'case3') {
     paramsString = getCase3String(resultName);
-  } else {
+  }else if (casex == 'case4') {
+    paramsString = getCase4String(resultName);
+  }  else {
     paramsString = getCaseString(resultName);
   }
   //console.log("paramsString"+paramsString);
@@ -285,6 +298,9 @@ function getHeader(casenum, cb) {
         case 'case3':
           cb(case3Header);
           break;
+        case 'case4':
+          cb(case4Header);
+          break;          
       }
     }
   })
@@ -328,6 +344,13 @@ function setheader(casenum, caseheader) {
       case3checkresult = case3Header.case3checkresult;
       case3active = case3Header.case3active;
       break;
+    case 'case4':
+      case4Header = caseheader;
+      case4calcResult = case4Header.case4calcResult;
+      case4outlets = case4Header.case4outlets;
+      case4sales = case4Header.case4sales;
+      case4package = case4Header.case4package;      
+      break;      
   }
 }
 
@@ -550,12 +573,79 @@ function getCase3String(resultName) {
     case 'case3calcResultExcel':
       paramsString = formatTitleExcel(case3calcResult);
       break;
+    case 'case3deliver':
+      paramsString = formatTitle(case3deliver);
+      break;
+    case 'case3deliverGrid':
+      paramsString = formatTitleGrid(case3deliver);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case3deliverExcel':
+      paramsString = formatTitleExcel(case3deliver);
+      break;    
     default:
       paramsString = "";
       break;
   }
   return paramsString;
 }
+
+function getCase4String(resultName) {
+  var paramsString = "";
+  switch (resultName) {
+   case 'case4outlet':
+      paramsString = formatTitle(case4outlets);
+      break;
+    case 'case4outletGrid':
+      paramsString = formatTitleGrid(case4outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case4outletExcel':
+      paramsString = formatTitleExcel(case4outlets);
+      break;
+    case 'case4package':
+      paramsString = formatTitle(case4package);
+      break;
+    case 'case4packageGrid':
+      paramsString = formatTitleGrid(case4package);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case4packageExcel':
+      paramsString = formatTitleExcel(case4package);
+      break;
+    case 'case4sales':
+      paramsString = formatTitle(case4sales);
+      break;
+    case 'case4salesGrid':
+      paramsString = formatTitleGrid(case4sales);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case4salesExcel':
+      paramsString = formatTitleExcel(case4sales);
+      break;
+    case 'case4calcResult':
+      paramsString = formatTitle(case4calcResult);
+      break;
+    case 'case4calcResultGrid':
+      paramsString = formatTitleGrid(case4calcResult);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case4calcResultExcel':
+      paramsString = formatTitleExcel(case4calcResult);
+      break;
+    default:
+      paramsString = "";
+      break;
+  }
+  return paramsString;
+}
+
+
 
 
 

@@ -39,6 +39,8 @@ app.get('/', function (req, res) {
 require('./routes1.js')(app);
 require('./routes2.js')(app);
 require('./routes3.js')(app);
+require('./routes4.js')(app);
+require('./rtest.js')(app);
 
 
 
