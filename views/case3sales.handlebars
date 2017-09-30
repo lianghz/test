@@ -2,8 +2,8 @@
 </table>
 <div id="case3sales-tbr">
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case3sales-dlg').dialog('open')">上传MM销量</a>
-    <a id="case3sales-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载MM销量</a>
-    {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
+    <a id="case3sales-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载MM销量</a>    {{!--
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
     <input id="case3sales-txt-period" style="width:120px;height:25px">
     <input id="case3sales-txt-outlet" style="width:120px;height:25px">
     <input id="case3sales-txt-name" style="width:200px;height:25px">
@@ -32,7 +32,8 @@
             <tr>
                 <td><input name="filename" class="f1 easyui-filebox"></input>
                 </td>
-                <td>　　先删除原数据</td><td><input name="cbrm" type="checkbox"></td>
+                <td>　　先删除原数据</td>
+                <td><input name="cbrm" type="checkbox"></td>
             </tr>
         </table>
     </form>
@@ -42,8 +43,11 @@
     var params = $('#case3sales-params').val();
     params = eval(params);
     //获取datagrid 数据
-        $('#case3sales-dg').datagrid({
+    $('#case3sales-dg').datagrid({
         url: '/case3/sales',
+        queryParams: {
+            period: new Date().format("yyyyMM")
+        },
         pagePosition: 'bottom',
         pagination: true,
         rownumbers: true,
@@ -124,11 +128,11 @@
         //down
         $("#case3sales-btn-down").click(function () {
             var params = $('#case3sales-dg').datagrid("options").queryParams;
-            var param='?';
+            var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case3/down/sales" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);

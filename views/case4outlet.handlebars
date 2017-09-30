@@ -133,9 +133,9 @@
             var params = $('#case4outlet-dg').datagrid("options").queryParams;
             var param='?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case4/down/outlet" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);

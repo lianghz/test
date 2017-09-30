@@ -78,10 +78,13 @@
 
     $('#case4-calcresult-dg').datagrid({
         url: '/case4/calcresultview',
-        {{!--pagePosition: 'bottom',
-        pagination: true,--}}
+        queryParams:{
+            period: new Date().format("yyyyMM")
+        },
+        pagePosition: 'bottom',
+        pagination: true,
         rownumbers: true,
-        {{!--//pageSize: 30,--}}
+        pageSize: 30,
         singleSelect: false,
         //frozenColumns: [[{field:'a',title:'　', width:25,formatter: function(value,row,index){return 'aa'}}]],
         columns: params,
@@ -149,14 +152,14 @@
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case4-calcresult-txt-outlet').textbox({
-            prompt: '合作伙伴售点',
+            prompt: 'MM售点',
             icons: [{
                 iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case4-calcresult-txt-name').textbox({
-            prompt: '客户名称',
+            prompt: '经销商',
             icons: [{
                 iconCls: 'icon-filter'
             }]

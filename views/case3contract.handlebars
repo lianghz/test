@@ -124,9 +124,9 @@
             var params = $('#case3contract-dg').datagrid("options").queryParams;
             var param='?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case3/down/contract" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);

@@ -26,7 +26,7 @@ function checkResultSave(rse, fileName, fields) {
 
 ///下载checkresult结果
 function checkResultToExcel(req, res) {
-    checkResult.getResultForExcel(req, res, function (docs) {
+    checkResult.getDataForExcel(req, res, function (docs) {
         var now = new Date();
         var fileName = "督导抽查结果" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
         jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {

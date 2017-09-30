@@ -55,7 +55,11 @@ var case4calcResult = ["BU","办事处","MM售点","SAP售点","经销商","目�
 var case4outlets = ["BU","办事处","MM售点","SAP售点","客户名称","A项折扣标准元/PC","ABC项折扣标准","ABC项折扣标准(2P)","每个SKU进货量","进货SKU数要求(淡季)","进货SKU数要求(旺季)","P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P1目标","P2目标","P3目标","P4目标","P5目标","P6目标","P7目标","P8目标","P9目标","P10目标","P11目标","P12目标"];
 var case4sales = ["周期","MM售点","产品代码","产品名称","销量"];
 var case4package = ["包装","产品代码","产品名称","目标销量"];
-var case4Header = {'case4calcResult': case4calcResult, 'case4outlets': case4outlets, 'case4sales': case4sales,'case4package': case4package}
+var case4calcResult2p=["BU","办事处","MM售点","SAP售点","经销商",
+"上月-目标(PC)","上月-淡旺季","上月-其它产品","上月-魔爪","上月-B项：纯悦","上月-B项：上月-怡泉+C","上月-合计","上月-进货达标SKU数","上月-C项：淡旺季进货是否达标","上月-A项：销量达成率",
+"目标(PC)","淡旺季","其它产品","魔爪","B项：纯悦","B项：怡泉+C","合计","进货达标SKU数","C项：淡旺季进货是否达标","A项：销量达成率","折扣标准：魔爪","折扣标准：A项、B项、C项",
+"计算金额","魔爪计算金额","合计金额","备注"];
+var case4Header = {'case4calcResult': case4calcResult, 'case4calcResult2p': case4calcResult2p,'case4outlets': case4outlets, 'case4sales': case4sales,'case4package': case4package}
 
 
 var FieldDate = ',保存时间,修改时间,';
@@ -111,7 +115,7 @@ function formatTitleGrid(arrs, fieldPrefix, rowspan, colspan, ww) {
       w = "width:50";
     } else if (elm.indexOf("售点") > -1 || elm == '数据类型' || elm == '客户' || elm == '周期') {
       w = "width:100";
-    } else if (elm == '保存时间' || elm == '修改时间' || elm == '办事处' || elm == '协议' || elm == '店名' || elm == '地址') {
+    } else if (elm == '保存时间' || elm == '修改时间' || elm == '办事处' || elm == '协议' || elm == '店名' || elm == '地址' || elm == '经销商') {
       w = "width:200";
     } else {
       w = "width:" + (elm.length * 15 + 15);
@@ -638,6 +642,17 @@ function getCase4String(resultName) {
     case 'case4calcResultExcel':
       paramsString = formatTitleExcel(case4calcResult);
       break;
+    case 'case4calcResult2p':
+      paramsString = formatTitle(case4calcResult2p);
+      break;
+    case 'case4calcResultGrid2p':
+      paramsString = formatTitleGrid(case4calcResult2p);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case4calcResultExcel2p':
+      paramsString = formatTitleExcel(case4calcResult2p);
+      break;      
     default:
       paramsString = "";
       break;

@@ -106,14 +106,16 @@ function getData(req, res, cb) {
 
 ///获取导出到excel的mongodb数据
 function getDataForExcel(req, res, cb) {
+    var loc = req.query.loc;
     var outlet = req.query.outlet;
+    var name = req.query.name;
     var condition = "";
 
     if (outlet) {
         if (condition) condition += ","
         condition += "'合作伙伴售点':/" + outlet + "/";
         // console.log("ccsdsds="+condition);
-    }
+    } 
     if (loc) {
         if (condition) condition += ","
         condition += "'办事处':/" + loc + "/";

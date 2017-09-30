@@ -45,18 +45,28 @@ module.exports = function (app) {
     app.get('/case4/calcresultgrid', function (req, res) {
         controller.calcResultGrid(req, res);
     });
-
+    app.get('/case4/calcresultgrid2p', function (req, res) {
+        controller.calcResultGrid2p(req, res);
+    });
     app.get('/case4/calcresultview', function (req, res) {
         controller.getCalcResultView(req, res);
     });
-
+    app.get('/case4/calcresultview2p', function (req, res) {
+        controller.getCalcResultView2p(req, res);
+    });
     app.post('/case4/saveversion', function (req, res) {
         controller.checkVersion(req, res);
+    });
+    app.post('/case4/saveversion2p', function (req, res) {
+        controller.checkVersion2p(req, res);
     });
     app.get('/case4/down/calcresult', function (req, res) {
         controller.calcResultDataToExcel(req, res);
     });
-     //--package
+    app.get('/case4/down/calcresult2p', function (req, res) {
+        controller.calcResultDataToExcel2p(req, res);
+    });
+    //--package
     app.post('/case4/upload/package', function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
@@ -79,20 +89,32 @@ module.exports = function (app) {
     app.get('/case4/down/history', function (req, res) {
         controller.versionsDataToExcel(req, res);
     });
+    app.get('/case4/down/history2p', function (req, res) {
+        controller.versionsDataToExcel2p(req, res);
+    });    
     app.get('/case4/historygrid', function (req, res) {
         controller.versionsGrid(req, res);
     });
+    app.get('/case4/historygrid2p', function (req, res) {
+        controller.versionsGrid2p(req, res);
+    });
     app.get('/case4/history', function (req, res) {
-
         controller.versionsGetData(req, res);
     });
+    app.get('/case4/history2p', function (req, res) {
+        controller.versionsGetData2p(req, res);
+    });
     app.get('/case4/version', function (req, res) {
-
         controller.versionsGetHistory(req, res);
+    });
+    app.get('/case4/version2p', function (req, res) {
+        controller.versionsGetHistory2p(req, res);
     });
 
     app.get('/case4/down/versionsGetHistoryToExcel', function (req, res) {
         controller.versionsGetHistoryToExcel(req, res);
     });
-   
+    app.get('/case4/down/versionsGetHistoryToExcel2p', function (req, res) {
+        controller.versionsGetHistoryToExcel2p(req, res);
+    });
 }

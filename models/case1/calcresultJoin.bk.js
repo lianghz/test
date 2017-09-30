@@ -85,7 +85,7 @@ function getCalcResult(req, res, cb) {
         outletModel.find(condition, function (err, outlets) {
             var docs = [];
             var rowId = 0;
-            var promises = outlets.map(function (outlet) {//这是号称魔鬼金字塔的回调嵌套开始，想办法解决
+            var promises = outlets.map(function (outlet) {
                 var setArgeement, checkResult, sales;
                 return Q.Promise(function (resolve, reject) {
                     outlet.getSetArgeement(function (err, setArgeement) {
@@ -113,23 +113,22 @@ function getCalcResult(req, res, cb) {
                     //var targetSales = docs[rowId]['销量目标/元/月'];//目标收入
                     var targetSales = checkOutlets[key]['合计目标收入'];//目标收入
 
-                    var rate = targetSales ? actual / targetSales : 0;//收入达成率
+                    var rate = targetSales ? actual / targetSales : 0;
 
-                    //达成率小于0.5不奖励，0.5到1，奖励一半，大于等于1，全部奖励
                     rate = rate < 0.5 ? 0 : rate;
                     rate = (rate > 0.5 && rate < 1) ? 0.5 : rate;
                     rate = rate >= 1 ? 1 : rate;
                     // console.log('rate2=' + rate)
                     // console.log("============================")
-                    amt = amt * rate;//计算实际奖励
+                    amt = amt * rate;
                     amt = amt.toFixed(2);
                     if (rowId > -1) {
-                        var disc = docs[rowId]['折扣/月/元'];//奖励目标
+                        var disc = docs[rowId]['折扣/月/元'];
                         if(!disc)disc=0;
                         // console.log('disc='+disc);
-                        if(amt>disc)amt=disc;//如果奖励比目标多则取目标
+                        if(amt>disc)amt=disc;
 
-                        docs[rowId]['计算结果合计（包含销量考核）'] = amt;//通过rowId更新考核售点所对应的合计值对应的字段
+                        docs[rowId]['计算结果合计（包含销量考核）'] = amt;
                         docs[rowId]['合计目标收入'] = targetSales;
                         docs[rowId]['合计实际收入'] = actual;
                         // console.log('amt2='+targetSales+'-'+amt);
@@ -137,7 +136,7 @@ function getCalcResult(req, res, cb) {
                     // console.log(rowId);
                     // console.log(amt);
                 }
-                docs = _.sortBy(docs, function (num) {//通过underscore来排序，始终有不妥
+                docs = _.sortBy(docs, function (num) {
                     if (parseInt(num['考核销量售点']) - parseInt(num['SAP售点']) == 0) {
                         return '' + num['考核销量售点'] + 1;
                     } else {
@@ -156,8 +155,7 @@ function getCalcResult(req, res, cb) {
 
 ////////////////////////////////
 
-///客户资料，协议设置，检查结果，MM销量，周期，行Id，生动化协议项目
-///当所有记录调用完该函数后，得到每个售点的建立金额，及一个按考核销量售点汇总的奖励金额集合
+///客户资料，协议设置，检查结果，MM销量，周期，行Id
 function getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period, rowId, agreements) {
     outlet = toJson(outlet);
     setArgeement = toJson(setArgeement);
@@ -231,35 +229,35 @@ function getCalcResultViewModel(outlet, setArgeement, checkResult, sales, period
     }
 
     ///奖励计算
-    awardResult = _.extend(awardResult, seasonQuantity);//目的是拷贝一个结构给awardResult，即{'SAP售点':1234,'数据类型':'数量','甲方冰柜':1,'乙方货架排面-全系列',:7... ...}
-    //遍历每个生动化检查项目的奖励方法、生动化要求数量、生动化奖励、检查结果
+    awardResult = _.extend(awardResult, seasonQuantity);//目的是拷贝一个结构给awardResult
     for (key in agreements) {
-        if (!awardTypes) break;//奖励方法
+        if (!awardTypes) break;
         // console.log('awardTypes='+key+'='+JSON.stringify(seasonQuantity))
-        var awardType = awardTypes?awardTypes[key]:'';//奖励方法是比例还是达标
-        var quantity = seasonQuantity?seasonQuantity[key]:0;//生动化检查要求的数量
-        var award = seasonAward?seasonAward[key]:0;//生动化检查给与的奖励
-        var checkQuantity = checkResult[key];//检查结果
+        var awardType = awardTypes?awardTypes[key]:'';
+        var quantity = seasonQuantity?seasonQuantity[key]:0;
+        var award = seasonAward?seasonAward[key]:0;
+        var checkQuantity = checkResult[key];
         outlet['备注']= seasonQuantity?'':'该售点没有设置协议';
-        checkQuantity = (checkQuantity == 'Y' ? quantity : (!isNaN(checkQuantity) ? checkQuantity : 0));//这里做个转换，如果检查结果是Y，则表示达标，把检查结果的值改为目标值，如果不是Y且不是数字则改为0，否则直接取数值。
+        checkQuantity = (checkQuantity == 'Y' ? quantity : (!isNaN(checkQuantity) ? checkQuantity : 0));
         checkQuantity = parseInt(checkQuantity);
         checkQuantity = checkQuantity > quantity ? quantity : checkQuantity;
         if (awardType == '达标') {
-            checkQuantity = checkQuantity >= quantity ? quantity : 0;//如果奖励方法是达标，即要求要100%满足条件，所以如果检查数量不等于要求数据，则不合格了。目的是把达标的算法转为与比例相同的方法。
+            checkQuantity = checkQuantity >= quantity ? quantity : 0;
         }
-        awardResult[key] = award * checkQuantity / quantity;//奖励金额乘以比例得出实际奖励金额，按生动化项目保存到奖励结果中。
-        awardSum += (!isNaN(awardResult[key]) ? awardResult[key] : 0);//合计奖励金额
+        awardResult[key] = award * checkQuantity / quantity;
+
+        awardSum += (!isNaN(awardResult[key]) ? awardResult[key] : 0);
     }
 
 
     ///如果考核售点未保存则创建,存在则合计各项值
-    var revenue = sales ? parseInt(sales["收入"]) : 0;//取售点的收入
-    if (!checkOutlets[outletKey]) checkOutlets = _.extend(checkOutlets, checkOutlet);//checkOutlets 全局变量，checkOutlet 保存{考核售点:{各种合计值}}，
-    checkOutlets[outletKey]["奖励合计"] += awardSum;//经过所有循环后，合计了该考核售点下的所有门店的奖励、实际收入、及目标收入
+    var revenue = sales ? parseInt(sales["收入"]) : 0;
+    if (!checkOutlets[outletKey]) checkOutlets = _.extend(checkOutlets, checkOutlet);
+    checkOutlets[outletKey]["奖励合计"] += awardSum;
     checkOutlets[outletKey]["合计实际收入"] += revenue;
     checkOutlets[outletKey]["合计目标收入"] += salesTarget ? parseFloat(salesTarget) : 0;
     if (outletKey == sapoutlet) {
-        checkOutlets[outletKey]["rowId"] = rowId;//记录了outlets集合中，考核售点所在的行
+        checkOutlets[outletKey]["rowId"] = rowId;
         // console.log('-----------------')
         // console.log('rowid2=' + rowId);
         // console.log('-----------------')

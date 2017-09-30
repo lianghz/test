@@ -21,7 +21,8 @@
 <input id="case4-2p-calcresult-params" type="hidden" name="referrer" value="{{params}}">
 <input id="case4-2p-calcresult-params2" type="hidden" name="referrer" value="{{params2}}">
 
-<div id="case4-2p-calcresult-dlg-save" class="easyui-dialog" title="保存计算结果" style="width:400px;height:200px;padding:10px" data-options="
+<div id="case4-2p-calcresult-dlg-save" class="easyui-dialog" title="保存计算结果" style="width:400px;height:200px;padding:10px"
+    data-options="
                 closed: true,
                 iconCls: 'icon-save',
                 buttons: [{
@@ -38,7 +39,7 @@
                     }
                 }]
             ">
-    <form id="case4-2p-calcresult-ff-save" action="/case4-2p/saveversion" method="post">
+    <form id="case4-2p-calcresult-ff-save" action="/case4/saveversion2p" method="post">
         <table>
             <tr>
                 <td>
@@ -77,11 +78,14 @@
 
 
     $('#case4-2p-calcresult-dg').datagrid({
-        url: '/case4-2p/calcresultview',
-        {{!--pagePosition: 'bottom',
-        pagination: true,--}}
+        url: '/case4/calcresultview2p',
+        queryParams: {
+            period: new Date().format("yyyyMM")
+        },
+        pagePosition: 'bottom',
+        pagination: true, 
         rownumbers: true,
-        {{!--//pageSize: 30,--}}
+        pageSize: 30,
         singleSelect: false,
         //frozenColumns: [[{field:'a',title:'　', width:25,formatter: function(value,row,index){return 'aa'}}]],
         columns: params,
@@ -142,21 +146,21 @@
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case4-2p-calcresult-txt-loc').textbox({
-            prompt: '查询办事处',
+            prompt: '办事处',
             icons: [{
                 iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case4-2p-calcresult-txt-outlet').textbox({
-            prompt: '合作伙伴售点',
+            prompt: 'MM售点',
             icons: [{
                 iconCls: 'icon-filter'
             }]
         }).textbox('addClearBtn', 'icon-clear');
 
         $('#case4-2p-calcresult-txt-name').textbox({
-            prompt: '客户名称',
+            prompt: '经销商',
             icons: [{
                 iconCls: 'icon-filter'
             }]
@@ -200,7 +204,7 @@
                 param += key + '=' + params[key] + '&';
             }
             param += 'a=1'
-            url = "/case4-2p/down/calcresult" + param;
+            url = "/case4/down/calcresult2p" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);
                 MaskUtil.unmask();

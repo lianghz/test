@@ -45,6 +45,9 @@
     //获取datagrid 数据
     $('#case3deliver-dg').datagrid({
         url: '/case3/deliver',
+        queryParams: {
+            period: new Date().format("yyyyMM")
+        },
         pagePosition: 'bottom',
         pagination: true,
         rownumbers: true,
@@ -126,9 +129,9 @@
             var params = $('#case3deliver-dg').datagrid("options").queryParams;
             var param = '?';
             for (key in params) {
-                param += key + '=' + params[key] + '&a=1';
-
+                param += key + '=' + params[key] + '&';
             }
+            param += 'a=1'
             url = "/case3/down/deliver" + param;
             $.get(url, function (result) {
                 $.messager.alert('结果已生成', result);

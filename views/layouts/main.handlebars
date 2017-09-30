@@ -136,13 +136,23 @@
                                     </ul>
                                 </li>
                                 <li>
-                                 <span>4.2.计算结果</span>
-                                <ul>
-                                    <li data-options="url:'/case4/calcresultgrid'">4.2.1.计算返还结果</li>
-                                    <li data-options="url:'/case4/historygrid'">4.2.2.查看历史结果</li>
-                                    <li data-options="url:'/case4/calcresultgrid'">4.2.3.计算返还结果(2P)</li>
-                                    <li data-options="url:'/case4/historygrid'">4.2.4.查看历史结果(2P)</li>
-                                </ul>
+                                    <span>4.2.计算结果</span>
+                                    <ul>
+                                        <li data-options="state:'closed'">
+                                            <span>4.2.1一个月</span>
+                                            <ul>
+                                                <li data-options="url:'/case4/calcresultgrid'">4.2.1.1.计算返还结果</li>
+                                                <li data-options="url:'/case4/historygrid'">4.2.1.2.查看历史结果</li>
+                                            </ul>
+                                        </li>
+                                        <li data-options="state:'closed'">
+                                            <span>4.2.2两个月</span>
+                                            <ul>
+                                                <li data-options="url:'/case4/calcresultgrid2p'">4.2.2.1.计算返还结果(2月)</li>
+                                                <li data-options="url:'/case4/historygrid2p'">4.2.2.2.查看历史结果(2月)</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </li>
