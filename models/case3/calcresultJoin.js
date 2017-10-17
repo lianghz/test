@@ -312,7 +312,7 @@ function getCalcResultViewModel(outlet, checkResult, sales, active, contract, pe
     } else {//粤西包装
         if (isOutletnumOK == 'Y' && isCheck == 'Y' && isContract == 'Y') {
             var mmsales2 = mmsales;
-            if (transRate1 < 1 || transRate2 < 1) mmsales2 = deliverSales//如果透明度小于1，按配送量计算返还
+            if (transRate1 <= 1 || transRate2 <= 1) mmsales2 = deliverSales//如果透明度小于1，按配送量计算返还
             if (mmsales2 > limitup) mmsales2 = limitup;
             award = mmsales2 * uni;
         }

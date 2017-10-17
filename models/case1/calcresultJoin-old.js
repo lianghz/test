@@ -125,7 +125,7 @@ function getCalcResult(req, res, cb) {
                     if (rowId > -1) {
                         var disc = docs[rowId]['折扣/月/元'];
                         if(!disc)disc=0;
-                        // console.log('disc='+disc);
+                        console.log('amt='+amt);
                         if(amt>disc)amt=disc;
 
                         docs[rowId]['计算结果合计（包含销量考核）'] = amt;
