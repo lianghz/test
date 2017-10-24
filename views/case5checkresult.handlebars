@@ -1,0 +1,154 @@
+<table id="case5checkresult-dg" title="督导抽查结果" style="width:100%;height:250px;border-top:0px;" toolbar="#case5checkresult-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+</table>
+<div id="case5checkresult-tbr">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case5checkresult-dlg').dialog('open')">上传结果</a>
+    <a id="case5checkresult-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载结果</a>
+    {{!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
+    {{!--<input id="case5checkresult-txt-bu" style="width:90px;height:25px">--}}
+    <input id="case5checkresult-txt-loc" style="width:120px;height:25px">
+    <input id="case5checkresult-txt-outlet" style="width:120px;height:25px">
+    <input id="case5checkresult-txt-name" style="width:200px;height:25px">
+    <a id="case5checkresult-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />
+</div>
+<input id="case5checkresult-params" type="hidden" name="referrer" value="{{params}}">
+
+<div id="case5checkresult-dlg" class="easyui-dialog" title="上传检查结果文件" style="width:400px;height:200px;padding:10px" data-options="
+                closed: true,
+                iconCls: 'icon-save',
+                buttons: [{
+                    text:'上传',
+                    iconCls:'icon-ok',
+                    handler:function(){
+                        $('#case5checkresult-ff').submit();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        $('#case5checkresult-dlg').dialog('close')
+                    }
+                }]
+            ">
+    <form id="case5checkresult-ff" action="/case5/upload/checkresult" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td><input name="filename" class="f1 easyui-filebox"></input>
+                </td>
+                <td>　　先删除原数据</td><td><input name="cbrm" type="checkbox"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script>
+    var params = $('#case5checkresult-params').val();
+    params = eval(params);
+    //获取datagrid 数据
+        $('#case5checkresult-dg').datagrid({
+        url: '/case5/checkresult',
+        pagePosition: 'bottom',
+        pagination: true,
+        rownumbers: true,
+        pageSize: 30,
+        singleSelect: false,
+        columns: [params]
+    });
+
+    $.extend($.fn.textbox.methods, {
+        addClearBtn: function (jq, iconCls) {
+            return jq.each(function () {
+                var t = $(this);
+                var opts = t.textbox('options');
+                opts.icons = opts.icons || [];
+                opts.icons.unshift({
+                    iconCls: iconCls,
+                    handler: function (e) {
+                        $(e.data.target).textbox('clear').textbox('textbox').focus();
+                        $(this).css('visibility', 'hidden');
+                    }
+                });
+                t.textbox();
+                if (!t.textbox('getText')) {
+                    t.textbox('getIcon', 0).css('visibility', 'hidden');
+                }
+                t.textbox('textbox').bind('keyup', function () {
+                    var icon = t.textbox('getIcon', 0);
+                    if ($(this).val()) {
+                        icon.css('visibility', 'visible');
+                    } else {
+                        icon.css('visibility', 'hidden');
+                    }
+                });
+            });
+        }
+    });
+
+
+    $(function () {
+
+        //-----
+
+        $('#case5checkresult-txt-loc').textbox({
+            prompt: '查询办事处',
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case5checkresult-txt-outlet').textbox({
+            prompt: '合作伙伴售点',
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case5checkresult-txt-name').textbox({
+            prompt: '合作伙伴名称',
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+        //------
+
+        $('#case5checkresult-ff').form({
+            success: function (data) {
+                $.messager.confirm(data, '是否刷新数据', function (r) {
+                    if (r) {
+                        $('#case5checkresult-dg').datagrid('reload');
+                    }
+                    $('#case5checkresult-dlg').dialog('close')
+                });
+
+            }
+        });
+
+        //down
+        $("#case5checkresult-btn-down").click(function () {
+            var params = $('#case5checkresult-dg').datagrid("options").queryParams;
+            var param='?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1'
+            url = "/case5/down/checkresult" + param;
+            $.get(url, function (result) {
+                $.messager.alert('结果已生成', result);
+                //$.get(result,function(){})
+                //window.open(result);
+            });
+        })
+        //end down
+        //search
+        $("#case5checkresult-btn-search").click(function () {
+            $('#case5checkresult-dg').datagrid('load', {
+                outlet: $('#case5checkresult-txt-outlet').textbox('getValue'),
+                loc: $('#case5checkresult-txt-loc').textbox('getValue'),
+                name: $('#case5checkresult-txt-name').textbox('getValue')
+            });
+        })
+        //end search
+
+    });
+
+//---------------
+
+</script>

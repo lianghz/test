@@ -60,7 +60,21 @@ var case4calcResult2p=["BU","办事处","MM售点","SAP售点","经销商",
 "目标(PC)","淡旺季","其它产品","魔爪","B项：纯悦","B项：怡泉+C","合计","进货达标SKU数","C项：淡旺季进货是否达标","A项：销量达成率","折扣标准：魔爪","折扣标准：A项、B项、C项",
 "计算金额","魔爪计算金额","合计金额","备注"];
 var case4Header = {'case4calcResult': case4calcResult, 'case4calcResult2p': case4calcResult2p,'case4outlets': case4outlets, 'case4sales': case4sales,'case4package': case4package}
-
+//case 5
+var case5calcResult = ["机制类型", "BU", "办事处", "合作伙伴售点", "合作伙伴SAP售点", "客户名称", "市场区隔","启动时间", 
+"合同签署开始时间", "合作伙伴类型", "本月下家客户数(≥10PC)", "本月下家客户数是否达标", "淡旺季","目标销量", "上限",
+"进货量", "督导抽查", "协议是否合格", "返还结果", "备注"];
+var case5outlets = ["机制类型", "BU", "办事处", "售点", "SAP售点", "客户名称","市场区隔", "合作伙伴类型", "启动时间", "折扣标准元/PC", "目标销量", "淡季上限(箱)", "旺季上限(箱)", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"];
+var case5sales = ["周期","MM售点", "售点名称", "销量"];
+var case5deliver = ["周期","MM售点", "售点名称", "配送量"];
+var case5contract = ["办事处", "MM售点", "SAP售点", "客户名称", "渠道", "合同开始时间", "合同结束时间", "是否转换渠道", "合同是否合格（Y/N)"];
+var case5checkresult = ["办事处", "抽查日期", "订单日期", "抽查人", "岗位/职位", "抽查订单数(C)", "差异订单数(D)", "差异率(D/C)", "合作伙伴售点", "合作伙伴名称"];
+var case5active = ["MM售点", "Passed"];
+var case5Header = {
+  'case5calcResult': case5calcResult, 'case5outlets': case5outlets, 'case5sales': case5sales,
+  'case5contract': case5contract, 'case5checkresult': case5checkresult, 'case5active': case5active,
+  'case5deliver':case5deliver
+}
 
 var FieldDate = ',保存时间,修改时间,';
 var FieldNumber = ',产品代码,序号,';
@@ -151,7 +165,9 @@ function paramNoDb(resultName, cb) {
     paramsString = getCase3String(resultName);
   }else if (casex == 'case4') {
     paramsString = getCase4String(resultName);
-  }  else {
+  } else if (casex == 'case5') {
+    paramsString = getCase5String(resultName);
+  } else {
     paramsString = getCaseString(resultName);
   }
   //console.log("paramsString"+paramsString);
@@ -304,7 +320,10 @@ function getHeader(casenum, cb) {
           break;
         case 'case4':
           cb(case4Header);
-          break;          
+          break; 
+        case 'case5':
+          cb(case5Header);
+          break;                    
       }
     }
   })
@@ -354,7 +373,16 @@ function setheader(casenum, caseheader) {
       case4outlets = case4Header.case4outlets;
       case4sales = case4Header.case4sales;
       case4package = case4Header.case4package;      
-      break;      
+      break; 
+    case 'case5':
+      case5Header = caseheader;
+      case5calcResult = case5Header.case5calcResult;
+      case5outlets = case5Header.case5outlets;
+      case5sales = case5Header.case5sales;
+      case5contract = case5Header.case5contract;
+      case5checkresult = case5Header.case5checkresult;
+      case5active = case5Header.case5active;
+      break;           
   }
 }
 
@@ -660,7 +688,103 @@ function getCase4String(resultName) {
   return paramsString;
 }
 
-
+function getCase5String(resultName) {
+  var paramsString = "";
+  switch (resultName) {
+    case 'case5checkresult':
+      paramsString = formatTitle(case5checkresult);
+      break;
+    case 'case5checkresultGrid':
+      paramsString = formatTitleGrid(case5checkresult);
+      paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5checkresultExcel'://case5checkresultGrid
+      paramsString = formatTitleExcel(case5checkresult);
+      break;
+    case 'case5outlet':
+      paramsString = formatTitle(case5outlets);
+      break;
+    case 'case5outletGrid':
+      paramsString = formatTitleGrid(case5outlets);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5outletExcel':
+      paramsString = formatTitleExcel(case5outlets);
+      break;
+    case 'case5sku':
+      paramsString = formatTitle(case5skus);
+      break;
+    case 'case5skuGrid':
+      paramsString = formatTitleGrid(case5skus);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5skuExcel':
+      paramsString = formatTitleExcel(case5skus);
+      break;
+    case 'case5sales':
+      paramsString = formatTitle(case5sales);
+      break;
+    case 'case5salesGrid':
+      paramsString = formatTitleGrid(case5sales);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5salesExcel':
+      paramsString = formatTitleExcel(case5sales);
+      break;
+    case 'case5active':
+      paramsString = formatTitle(case5active);
+      break;
+    case 'case5activeGrid':
+      paramsString = formatTitleGrid(case5active);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5activeExcel':
+      paramsString = formatTitleExcel(case5active);
+      break;
+    case 'case5contract':
+      paramsString = formatTitle(case5contract);
+      break;
+    case 'case5contractGrid':
+      paramsString = formatTitleGrid(case5contract);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5contractExcel':
+      paramsString = formatTitleExcel(case5contract);
+      break;
+    case 'case5calcResult':
+      paramsString = formatTitle(case5calcResult);
+      break;
+    case 'case5calcResultGrid':
+      paramsString = formatTitleGrid(case5calcResult);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5calcResultExcel':
+      paramsString = formatTitleExcel(case5calcResult);
+      break;
+    case 'case5deliver':
+      paramsString = formatTitle(case5deliver);
+      break;
+    case 'case5deliverGrid':
+      paramsString = formatTitleGrid(case5deliver);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case5deliverExcel':
+      paramsString = formatTitleExcel(case5deliver);
+      break;    
+    default:
+      paramsString = "";
+      break;
+  }
+  return paramsString;
+}
 
 
 
