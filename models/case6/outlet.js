@@ -11,11 +11,11 @@ var SchemaParams;
 var schema = mongoose.Schema();
 var tempColl = require("./tempCollection.js");
 var Q = require('q');
-var dataModel = mongoose.model('case3outlet', schema);//(文档，schema)定义了一个model
+var dataModel = mongoose.model('case6outlet', schema);//(文档，schema)定义了一个model
 
 
 function removeSaveData(docs) {
-    var removeDataModel = mongoose.model('case3outlet', schema);//(文档，schema)定义了一个model
+    var removeDataModel = mongoose.model('case6outlet', schema);//(文档，schema)定义了一个model
     removeDataModel.remove({}, function (err, result) {
         saveData(docs);
     });
@@ -25,13 +25,12 @@ function removeSaveData(docs) {
 //传入检查结果的JSON数据，保存到数据库中
 function saveData(docs) {
     // console.log('saveData='+docs)
-    params.paramNoDb("case3outlet", function (result) {
+    params.paramNoDb("case6outlet", function (result) {
         SchemaParams = eval("(" + result + ")");
         //console.log('saveData=' + result);
         schema.add(SchemaParams);
-        //var dataModel = mongoose.model('case3outlet', schema);//(文档，schema)定义了一个model
-        // var promises = 
-        docs.map(function (doc) {//把键值的非法字符.转全角．
+        //var dataModel = mongoose.model('case6outlet', schema);//(文档，schema)定义了一个model
+        var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
                     key2 = key.replace(".", "．");
@@ -39,29 +38,29 @@ function saveData(docs) {
                 }
             }
             // console.log('data1='+doc);
-            // return Q.Promise(function (resolve, reject) {
-            dataModel.remove({ '售点': doc['售点'] }, function () {
-                dataModel.update({ '售点': doc['售点'] },
-                    doc,
-                    { upsert: true },
-                    function (err, docs) {
-                        if (err) {
-                            console.error(err.stack);
-                        }
-                        // resolve();
-                    });
+            return Q.Promise(function (resolve, reject) {
+                dataModel.remove({ 'MM售点': doc['MM售点'] }, function () {
+                    dataModel.update({ 'MM售点': doc['MM售点'] },
+                        doc,
+                        { upsert: true },
+                        function (err, docs) {
+                            if (err) {
+                                console.error(err.stack);
+                            }
+                            resolve();
+                        });
+                });
             });
-            // });
         });
-        // Q.all(promises).then(function () {
-        //     tempColl.createTempOutlet(function (msg) {
-        //     })
-        // });
+        Q.all(promises).then(function () {
+            tempColl.createTempOutlet(function (msg) {
+            })
+        });
     });
 }
 ///获取grid表头格式
 function getGrid(cb) {
-    params.paramNoDb("case3outletGrid", function (result) {
+    params.paramNoDb("case6outletGrid", function (result) {
         cb(result);
     });
 }
@@ -72,17 +71,11 @@ function getData(req, res, cb) {
     var rows = parseInt(req.query.rows);
     var skip = (page - 1) * rows;
     var outlet = req.query.outlet;
-    var type = req.query.type;
     var bu = req.query.bu;
     var name = req.query.name;
     var loc = req.query.loc;
     var condition = "";
     // console.log("ccsdsds1="+outlet);
-    if (type) {
-        if (condition) condition += ","
-        condition += "'机制类型':/" + type + "/";
-        // console.log("ccsdsds="+condition);
-    }
 
     if (bu) {
         if (condition) condition += ","
@@ -92,7 +85,7 @@ function getData(req, res, cb) {
 
     if (outlet) {
         if (condition) condition += ","
-        condition += "'售点':/" + outlet + "/";
+        condition += "'MM售点':/" + outlet + "/";
         // console.log("ccsdsds="+condition);
     }
     if (name && name != '') {
@@ -108,7 +101,7 @@ function getData(req, res, cb) {
 
     // console.log("con1=" + condition);
     condition = eval("({" + condition + "})");
-    params.paramNoDb("case3outlet", function (result) {
+    params.paramNoDb("case6outlet", function (result) {
         // SchemaParams = eval("(" + result + ")");貌似查询的时候不用定义schema格式，返回所有字段
         // CheckResultSchema.add(SchemaParams);
 
@@ -127,17 +120,11 @@ function getData(req, res, cb) {
 ///获取导出到excel的mongodb数据
 function getDataForExcel(req, res, cb) {
     var outlet = req.query.outlet;
-    var type = req.query.type;
     var bu = req.query.bu;
     var name = req.query.name;
     var loc = req.query.loc;
     var condition = "";
     // console.log("ccsdsds1="+outlet);
-    if (type) {
-        if (condition) condition += ","
-        condition += "'机制类型':/" + type + "/";
-        // console.log("ccsdsds="+condition);
-    }
 
     if (bu) {
         if (condition) condition += ","
@@ -162,13 +149,13 @@ function getDataForExcel(req, res, cb) {
     }
     condition = eval("({" + condition + "})");
 
-    params.paramNoDb("case3outletExcel", function (result) {
+    params.paramNoDb("case6outletExcel", function (result) {
         var excelHeader;
         excelHeader = result;
-        params.paramNoDb("case3outlet", function (result) {
+        params.paramNoDb("case6outlet", function (result) {
             SchemaParams = eval("(" + result + ")");//貌似查询的时候不用定义schema格式，返回所有字段
             schema.add(SchemaParams);
-            //var dataModel = mongoose.model('case3outlet', schema);//(文档，schema)定义了一个model
+            //var dataModel = mongoose.model('case6outlet', schema);//(文档，schema)定义了一个model
             //console.log(condition);
             dataModel.find(condition, function (err, docs) {
                 cb({ "excelHeader": excelHeader, "docs": docs });

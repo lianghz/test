@@ -1,0 +1,154 @@
+<table id="case6standar-dg" title="折扣标准" style="width:100%;height:250px;border-top:0px;" toolbar="#case6standar-tbr" data-options="singleSelect:true,collapsible:true,method:'get',fit:true,border:false,">
+</table>
+<div id="case6standar-tbr">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="$('#case6standar-dlg').dialog('open')">上传折扣标准</a>
+    <a id="case6standar-btn-down" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-download" plain="true">下载折扣标准</a>    {{!--
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delrow()">删除选择</a>--}}
+    {{!--<input id="case6standar-txt-period" style="width:120px;height:25px">
+    <input id="case6standar-txt-outlet" style="width:120px;height:25px">
+    <input id="case6standar-txt-name" style="width:200px;height:25px">--}}
+    {{!--<a id="case6standar-btn-search" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" />--}}
+</div>
+<input id="case6standar-params" type="hidden" name="referrer" value="{{params}}">
+
+<div id="case6standar-dlg" class="easyui-dialog" title="上传折扣标准文件" style="width:400px;height:200px;padding:10px" data-options="
+                closed: true,
+                iconCls: 'icon-save',
+                buttons: [{
+                    text:'上传',
+                    iconCls:'icon-ok',
+                    handler:function(){
+                        $('#case6standar-ff').submit();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        $('#case6standar-dlg').dialog('close')
+                    }
+                }]
+            ">
+    <form id="case6standar-ff" action="/case6/upload/standar" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td><input name="filename" class="f1 easyui-filebox"></input>
+                </td>
+                <td>　　先删除原数据</td>
+                <td><input name="cbrm" type="checkbox"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script>
+    var params = $('#case6standar-params').val();
+    params = eval(params);
+    //获取datagrid 数据
+    $('#case6standar-dg').datagrid({
+        url: '/case6/standar',
+        queryParams: {
+            period: new Date().format("yyyyMM")
+        },
+        pagePosition: 'bottom',
+        pagination: true,
+        rownumbers: true,
+        pageSize: 30,
+        singleSelect: false,
+        columns: [params]
+    });
+
+    $.extend($.fn.textbox.methods, {
+        addClearBtn: function (jq, iconCls) {
+            return jq.each(function () {
+                var t = $(this);
+                var opts = t.textbox('options');
+                opts.icons = opts.icons || [];
+                opts.icons.unshift({
+                    iconCls: iconCls,
+                    handler: function (e) {
+                        $(e.data.target).textbox('clear').textbox('textbox').focus();
+                        $(this).css('visibility', 'hidden');
+                    }
+                });
+                t.textbox();
+                if (!t.textbox('getText')) {
+                    t.textbox('getIcon', 0).css('visibility', 'hidden');
+                }
+                t.textbox('textbox').bind('keyup', function () {
+                    var icon = t.textbox('getIcon', 0);
+                    if ($(this).val()) {
+                        icon.css('visibility', 'visible');
+                    } else {
+                        icon.css('visibility', 'hidden');
+                    }
+                });
+            });
+        }
+    });
+
+
+    $(function () {
+
+        //-----
+{{!--
+        $('#case6standar-txt-period').textbox({
+            prompt: '周期',
+            value: new Date().format("yyyyMM"),
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case6standar-txt-outlet').textbox({
+            prompt: 'MM售点',
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');
+
+        $('#case6standar-txt-name').textbox({
+            prompt: '售点名称',
+            icons: [{
+                iconCls: 'icon-filter'
+            }]
+        }).textbox('addClearBtn', 'icon-clear');--}}
+        //------
+
+        $('#case6standar-ff').form({
+            success: function (data) {
+                $.messager.confirm(data, '是否刷新数据', function (r) {
+                    if (r) {
+                        $('#case6standar-dg').datagrid('reload');
+                    }
+                    $('#case6standar-dlg').dialog('close')
+                });
+
+            }
+        });
+
+        //down
+        $("#case6standar-btn-down").click(function () {
+            var params = $('#case6standar-dg').datagrid("options").queryParams;
+            var param = '?';
+            for (key in params) {
+                param += key + '=' + params[key] + '&';
+            }
+            param += 'a=1'
+            url = "/case6/down/standar" + param;
+            $.get(url, function (result) {
+                $.messager.alert('结果已生成', result);
+                //$.get(result,function(){})
+                //window.open(result);
+            });
+        })
+        //end down
+        //search
+        $("#case6standar-btn-search").click(function () {
+            $('#case6standar-dg').datagrid('load');
+        });
+        //end search
+
+    });
+
+//---------------
+
+</script>

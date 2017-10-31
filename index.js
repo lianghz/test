@@ -41,6 +41,7 @@ require('./routes2.js')(app);
 require('./routes3.js')(app);
 require('./routes4.js')(app);
 require('./routes5.js')(app);
+require('./routes6.js')(app);
 // require('./rtest.js')(app);
 
 

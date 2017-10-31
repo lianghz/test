@@ -73,7 +73,7 @@ var activeModel = mongoose.model('case3active2', activeSchema, 'case3actives');
 var contractModel = mongoose.model('case3contract2', contractSchema, 'case3contracts');
 var versionResultModel = mongoose.model('case3versionResult2', versionResultSchema, 'case3versionResults');
 var versionModel = mongoose.model('case3version', versionSchema, 'case3versions');
-var outletModel = mongoose.model('case3outlet2', outletSchema, 'case3outlettemps');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
+var outletModel = mongoose.model('case3outlet2', outletSchema, 'case3outlets');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
 
 function getCalcResult(req, res, cb) {
     getCalcResultDate(req, res, 'grid', cb);
@@ -321,7 +321,7 @@ function getCalcResultViewModel(outlet, checkResult, sales, active, contract, pe
     //"合作伙伴类型", "本月下家客户数(≥10PC)",
     // "本月下家客户数是否达标", "淡旺季", "上限", "进货量", "督导抽查", "协议是否合格", " 返还结果 ", "备注"
     return _.extend(outlet, active, contract, {
-        '目标销量': limitlow, '上限': limitup, '合同签署开始时间': contract['合同开始时间']
+        '目标销量': limitlow, '上限': limitup, '合同签署开始时间':(contract?contract['合同开始时间']:'')
         , '2个月进货量': mmsalesPer, '2个月配送量': deliverSalesPer, '2个月透明度': (transRate1 * 100).toFixed(2) + '%', '进货量': mmsales, '配送量': deliverSales, '透明度': (transRate2 * 100).toFixed(2) + '%'
         , '合作伙伴售点': outlet['售点'], '合作伙伴SAP售点': outlet['SAP售点'], '本月下家客户数(≥10PC)': outletnum, '本月下家客户数是否达标': isOutletnumOK, '淡旺季': seasonType, '督导抽查': isCheck, '协议是否合格': isContract, '返还结果': award.toFixed(2), '备注': ''
     });
