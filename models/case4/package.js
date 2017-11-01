@@ -26,7 +26,7 @@ function saveData(docs) {
         //console.log('saveData=' + result);
         schema.add(SchemaParams);
         // var dataModel = mongoose.model('case4package', schema);//(文档，schema)定义了一个model
-        var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
+        docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
                     key2 = key.replace(".", "．");

@@ -33,8 +33,8 @@ function saveData(docs) {
                 }
             }
             // console.log('data1='+doc);
-            dataModel.remove({ 'MM售点': doc['MM售点'],'周期': doc['周期'] }, function () {
-                dataModel.update({ 'MM售点': doc['MM售点'],'周期': doc['周期']  },
+            dataModel.remove({ 'MM售点': doc['MM售点'],'周期': doc['周期'],'产品代码':doc['产品代码'] }, function () {
+                dataModel.update({ 'MM售点': doc['MM售点'],'周期': doc['周期'],'产品代码':doc['产品代码']  },
                     doc,
                     { upsert: true },
                     function (err, docs) {

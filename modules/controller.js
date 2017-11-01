@@ -66,7 +66,7 @@ function setArgeementgetData(req, res) {
 function setArgeementgetGrid(req, res) {
     var docs = setArgeement.getGrid(function (docs) {
         // console.log(docs);
-        res.render('case1setArgeement', { layout: null, params: docs });
+        res.render('case1/setArgeement', { layout: null, params: docs });
     });
 }
 ////----outlet
@@ -103,7 +103,7 @@ function outletGetData(req, res) {
 function outletGetGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case1outlet', { layout: null, params: docs });
+        res.render('case1/outlet', { layout: null, params: docs });
     });
 }
 
@@ -143,7 +143,7 @@ function salesGetData(req, res) {
 function salesGetGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case1sales', { layout: null, params: docs });
+        res.render('case1/sales', { layout: null, params: docs });
     });
 }
 
@@ -165,7 +165,7 @@ function calcResultGetData(req, res) {
 function calcResultGetGrid(req, res) {
     calcResult.getGrid(function (docs, docs2) {
         //console.log("d1=" + docs);
-        res.render('case1calcResult', { layout: null, params: docs, params2: docs2 });
+        res.render('case1/calcResult', { layout: null, params: docs, params2: docs2 });
     });
 }
 
@@ -222,7 +222,7 @@ function versionsGetData(req, res) {
 //     history.getGrid(function (result, result2, result3) {
 //         // console.log("d1=" + result);
 //         // console.log("d2=" + result2);
-//         res.render('case1history', { layout: null, params: result, paramsv1: result2, paramsv2: result3 });
+//         res.render('case1/history', { layout: null, params: result, paramsv1: result2, paramsv2: result3 });
 //     });
 // }
 
@@ -230,7 +230,7 @@ function versionsGetGrid(req, res) {
     history.getGrid(function (result) {
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case1history', { layout: null, params: result});
+        res.render('case1/history', { layout: null, params: result});
     });
 }
 

@@ -79,13 +79,14 @@ var case5Header = {
 //case6
 var case6calcResult = ["BU", "办事处", "售点编号", "客户名称", "类型", "渠道", "进货量","配送量", "标准", "销售折扣合计", "备注", "是否签署合同", "签署合同备注"];
 var case6outlets = ["BU", "办事处", "MM售点", "售点编号", "客户名称", "类型", "渠道", "启动周期"];
-var case6sales = ["周期", "MM售点", "售点名称", "销量"];
+var case6sales = ["周期", "MM售点", "售点名称", "产品代码","产品名称","销量"];
+var case6package = ["包装", "产品代码", "产品名称", "目标销量"];
 var case6deliver = ["周期", "MM售点", "售点名称", "配送量"];
 var case6contract = ["办事处", "MM售点", "SAP售点", "售点名称", "合同是否合格（Y/N)"];
 var case6standar = ["BU","渠道","一次性折扣/PC","RB折扣/PC"];
 var case6Header = {
   'case6calcResult': case6calcResult, 'case6outlets': case6outlets, 'case6sales': case6sales,
-  'case6contract': case6contract, 'case6standar': case6standar, 'case6deliver': case6deliver
+  'case6contract': case6contract, 'case6standar': case6standar, 'case6deliver': case6deliver,'case6package':case6package
 }
 
 
@@ -882,6 +883,17 @@ function getCase6String(resultName) {
     case 'case6deliverExcel':
       paramsString = formatTitleExcel(case6deliver);
       break;
+    case 'case6package':
+      paramsString = formatTitle(case6package);
+      break;
+    case 'case6packageGrid':
+      paramsString = formatTitleGrid(case6package);
+      // paramsString += ',' + "{title:'　',field:' '}"//解决最后一列错位
+      paramsString = '[' + paramsString + ']';
+      break;
+    case 'case6packageExcel':
+      paramsString = formatTitleExcel(case6package);
+      break;      
     default:
       paramsString = "";
       break;

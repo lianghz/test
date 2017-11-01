@@ -42,7 +42,7 @@ function checkResultGetData(req, res) {
 function checkResultGrid(req, res) {
     checkResult.getGrid(function (docs) {
         // console.log(docs);
-        res.render('case4checkresult', { layout: null, params: docs });
+        res.render('case4/checkresult', { layout: null, params: docs });
     });
 }
 
@@ -81,7 +81,7 @@ function outletGetData(req, res) {
 function outletGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case4outlet', { layout: null, params: docs });
+        res.render('case4/outlet', { layout: null, params: docs });
     });
 }
 ///------------
@@ -121,7 +121,7 @@ function packageGetData(req, res) {
 function packageGrid(req, res) {
     package.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case4package', { layout: null, params: docs });
+        res.render('case4/package', { layout: null, params: docs });
     });
 }
 ///------------
@@ -160,7 +160,7 @@ function salesGetData(req, res) {
 function salesGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case4sales', { layout: null, params: docs });
+        res.render('case4/sales', { layout: null, params: docs });
     });
 }
 ///------------
@@ -169,13 +169,13 @@ function salesGrid(req, res) {
 function calcResultGrid(req, res) {
     calcresultJoin.getGrid(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case4calcResult', { layout: null, params: docs });
+        res.render('case4/calcResult', { layout: null, params: docs });
     });
 }
 function calcResultGrid2p(req, res) {
     calcresultJoin.getGrid2p(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case4calcResult2p', { layout: null, params: docs });
+        res.render('case4/calcResult2p', { layout: null, params: docs });
     });
 }
 function getCalcResultView(req, res) {
@@ -236,7 +236,7 @@ function versionsGrid(req, res) {
     history.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case4history', { layout: null, params: result, paramsv1: result2 });
+        res.render('case4/history', { layout: null, params: result, paramsv1: result2 });
     });
 }
 
@@ -244,7 +244,7 @@ function versionsGrid2p(req, res) {
     history2p.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case4history2p', { layout: null, params: result, paramsv1: result2 });
+        res.render('case4/history2p', { layout: null, params: result, paramsv1: result2 });
     });
 }
 

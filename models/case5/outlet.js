@@ -30,7 +30,8 @@ function saveData(docs) {
         //console.log('saveData=' + result);
         schema.add(SchemaParams);
         //var dataModel = mongoose.model('case5outlet', schema);//(文档，schema)定义了一个model
-        var promises = docs.map(function (doc) {//把键值的非法字符.转全角．
+        // var promises = 
+        docs.map(function (doc) {//把键值的非法字符.转全角．
             for (var key in doc) {
                 if (key.indexOf(".") > 0) {
                     key2 = key.replace(".", "．");
@@ -38,24 +39,24 @@ function saveData(docs) {
                 }
             }
             // console.log('data1='+doc);
-            return Q.Promise(function (resolve, reject) {
-                dataModel.remove({ '售点': doc['售点'] }, function () {
-                    dataModel.update({ '售点': doc['售点'] },
-                        doc,
-                        { upsert: true },
-                        function (err, docs) {
-                            if (err) {
-                                console.error(err.stack);
-                            }
-                            resolve();
-                        });
-                });
+            // return Q.Promise(function (resolve, reject) {
+            dataModel.remove({ '售点': doc['售点'] }, function () {
+                dataModel.update({ '售点': doc['售点'] },
+                    doc,
+                    { upsert: true },
+                    function (err, docs) {
+                        if (err) {
+                            console.error(err.stack);
+                        }
+                        // resolve();
+                    });
             });
+            // });
         });
-        Q.all(promises).then(function () {
-            tempColl.createTempOutlet(function (msg) {
-            })
-        });
+        // Q.all(promises).then(function () {
+        //     tempColl.createTempOutlet(function (msg) {
+        //     })
+        // });
     });
 }
 ///获取grid表头格式

@@ -44,7 +44,7 @@ function checkResultGetData(req, res) {
 function checkResultGetGrid(req, res) {
     checkResult.getGrid(function (docs) {
         // console.log(docs);
-        res.render('case2checkresult', { layout: null, params: docs });
+        res.render('case2/checkresult', { layout: null, params: docs });
     });
 }
 
@@ -83,7 +83,7 @@ function outletGetData(req, res) {
 function outletGetGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2outlet', { layout: null, params: docs });
+        res.render('case2/outlet', { layout: null, params: docs });
     });
 }
 ///------------
@@ -122,7 +122,7 @@ function skuGetData(req, res) {
 function skuGetGrid(req, res) {
     sku.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2sku', { layout: null, params: docs });
+        res.render('case2/sku', { layout: null, params: docs });
     });
 }
 ///------------
@@ -161,7 +161,7 @@ function packageGetData(req, res) {
 function packageGetGrid(req, res) {
     package.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2package', { layout: null, params: docs });
+        res.render('case2/package', { layout: null, params: docs });
     });
 }
 ///------------
@@ -201,7 +201,7 @@ function salesGetData(req, res) {
 function salesGetGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case2sales', { layout: null, params: docs });
+        res.render('case2/sales', { layout: null, params: docs });
     });
 }
 ///------------
@@ -209,7 +209,7 @@ function salesGetGrid(req, res) {
 function calcResultGetGrid(req, res) {
     calcresultJoin.getGrid(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case2calcResult', { layout: null, params: docs });
+        res.render('case2/calcResult', { layout: null, params: docs });
     });
 }
 
@@ -248,7 +248,7 @@ function versionsGetGrid(req, res) {
     history.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case2history', { layout: null, params: result, paramsv1: result2 });
+        res.render('case2/history', { layout: null, params: result, paramsv1: result2 });
     });
 }
 

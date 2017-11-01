@@ -6,6 +6,7 @@ var sales = require("../models/case6/sales.js");
 var calcresultJoin = require('../models/case6/calcresultJoin.js');
 var history = require('../models/case6/history.js');
 var deliver = require('../models/case6/deliver.js');
+var package = require('../models/case6/package.js');
 
 ///--------------------------------------------------------
 ///上传检查结果excel文件，把excel转JSON，把JSON保存到mongodb
@@ -42,7 +43,7 @@ function outletGetData(req, res) {
 function outletGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case6outlet', { layout: null, params: docs });
+        res.render('case6/outlet', { layout: null, params: docs });
     });
 }
 ///------------
@@ -81,7 +82,7 @@ function standarGetData(req, res) {
 function standarGrid(req, res) {
     standar.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case6standar', { layout: null, params: docs });
+        res.render('case6/standar', { layout: null, params: docs });
     });
 }
 ///------------
@@ -120,7 +121,7 @@ function contractGetData(req, res) {
 function contractGrid(req, res) {
     contract.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case6contract', { layout: null, params: docs });
+        res.render('case6/contract', { layout: null, params: docs });
     });
 }
 ///------------
@@ -159,7 +160,7 @@ function salesGetData(req, res) {
 function salesGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case6sales', { layout: null, params: docs });
+        res.render('case6/sales', { layout: null, params: docs });
     });
 }
 ///------------
@@ -198,7 +199,7 @@ function deliverGetData(req, res) {
 function deliverGrid(req, res) {
     deliver.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case6deliver', { layout: null, params: docs });
+        res.render('case6/deliver', { layout: null, params: docs });
     });
 }
 ///------------
@@ -207,7 +208,7 @@ function deliverGrid(req, res) {
 function calcResultGrid(req, res) {
     calcresultJoin.getGrid(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case6calcResult', { layout: null, params: docs });
+        res.render('case6/calcResult', { layout: null, params: docs });
     });
 }
 
@@ -246,7 +247,7 @@ function versionsGrid(req, res) {
     history.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case6history', { layout: null, params: result, paramsv1: result2 });
+        res.render('case6/history', { layout: null, params: result, paramsv1: result2 });
     });
 }
 
@@ -272,7 +273,45 @@ function versionsGetHistoryToExcel(req, res) {
 
     })
 }
+///----package-----
+function packageSaveData(rse, fileName, fields) {
+    //console.log('setfilename=' + fileName);
+    var docs = jsonObj.ExcelToJson(fileName, "MM销量");
+    var cbrm = fields.cbrm;
+    if (cbrm == 'on') {
+        package.removeSaveData(docs);
+    }
+    else {
+        package.saveData(docs);
+    }
 
+    rse.send("数据上传更新完成！");
+}
+
+function packageDataToExcel(req, res) {
+    package.getDataForExcel(req, res, function (docs) {
+        var now = new Date();
+        var fileName = "MM销量" + now.getFullYear() + now.getMonth() + now.getDate() + ".xlsx";
+        jsonObj.JsonToExcel(docs, fileName, function cb(filepath) {
+            res.send(filepath);
+        });
+
+    })
+}
+
+function packageGetData(req, res) {
+    package.getData(req, res, function (docs) {
+        res.send(docs);
+    });
+}
+
+function packageGrid(req, res) {
+    package.getGrid(function (docs) {
+        //console.log("d1=" + docs);
+        res.render('case6/package', { layout: null, params: docs });
+    });
+}
+///------------
 //// methods-----------------
 var methods = {
     'outletSaveData': outletSaveData,
@@ -303,6 +342,10 @@ var methods = {
     'deliverDataToExcel': deliverDataToExcel,
     'deliverGetData': deliverGetData,
     'deliverGrid': deliverGrid,
+    'packageSaveData': packageSaveData,
+    'packageDataToExcel': packageDataToExcel,
+    'packageGetData': packageGetData,
+    'packageGrid': packageGrid,
 };
 
 module.exports = methods;

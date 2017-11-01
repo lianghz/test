@@ -46,7 +46,7 @@ function checkResultGetData(req, res) {
 function checkResultGrid(req, res) {
     checkResult.getGrid(function (docs) {
         // console.log(docs);
-        res.render('case5checkresult', { layout: null, params: docs });
+        res.render('case5/checkresult', { layout: null, params: docs });
     });
 }
 
@@ -85,7 +85,7 @@ function outletGetData(req, res) {
 function outletGrid(req, res) {
     outlet.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5outlet', { layout: null, params: docs });
+        res.render('case5/outlet', { layout: null, params: docs });
     });
 }
 ///------------
@@ -124,7 +124,7 @@ function skuGetData(req, res) {
 function skuGrid(req, res) {
     sku.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5sku', { layout: null, params: docs });
+        res.render('case5/sku', { layout: null, params: docs });
     });
 }
 ///------------
@@ -163,7 +163,7 @@ function activeGetData(req, res) {
 function activeGrid(req, res) {
     active.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5active', { layout: null, params: docs });
+        res.render('case5/active', { layout: null, params: docs });
     });
 }
 ///------------
@@ -201,7 +201,7 @@ function contractGetData(req, res) {
 function contractGrid(req, res) {
     contract.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5contract', { layout: null, params: docs });
+        res.render('case5/contract', { layout: null, params: docs });
     });
 }
 ///------------
@@ -240,7 +240,7 @@ function salesGetData(req, res) {
 function salesGrid(req, res) {
     sales.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5sales', { layout: null, params: docs });
+        res.render('case5/sales', { layout: null, params: docs });
     });
 }
 ///------------
@@ -279,7 +279,7 @@ function deliverGetData(req, res) {
 function deliverGrid(req, res) {
     deliver.getGrid(function (docs) {
         //console.log("d1=" + docs);
-        res.render('case5deliver', { layout: null, params: docs });
+        res.render('case5/deliver', { layout: null, params: docs });
     });
 }
 ///------------
@@ -288,7 +288,7 @@ function deliverGrid(req, res) {
 function calcResultGrid(req, res) {
     calcresultJoin.getGrid(function (docs) {
         // console.log("d1=" + docs);
-        res.render('case5calcResult', { layout: null, params: docs });
+        res.render('case5/calcResult', { layout: null, params: docs });
     });
 }
 
@@ -327,7 +327,7 @@ function versionsGrid(req, res) {
     history.getGrid(req, res, function (result, result2) {//result:版本清单表头，result2：历史结果表头
         // console.log("d1=" + result);
         // console.log("d2=" + result2);
-        res.render('case5history', { layout: null, params: result, paramsv1: result2 });
+        res.render('case5/history', { layout: null, params: result, paramsv1: result2 });
     });
 }
 

@@ -169,4 +169,22 @@ module.exports = function (app) {
     app.get('/case6/deliver', function (req, res) {
         controller.deliverGetData(req, res);
     });
+    //--package
+    app.post('/case6/upload/package', function (req, res) {
+        var form = new formidable.IncomingForm();
+        form.parse(req, function (err, fields, files) {
+            if (err) return res.redirect(303, '/error');
+            var filepath = files.filename.path;
+            controller.packageSaveData(res, filepath, fields);
+        });
+    });
+    app.get('/case6/down/package', function (req, res) {
+        controller.packageDataToExcel(req, res);
+    });
+    app.get('/case6/packagegrid', function (req, res) {
+        controller.packageGrid(req, res);
+    });
+    app.get('/case6/package', function (req, res) {
+        controller.packageGetData(req, res);
+    });
 }
