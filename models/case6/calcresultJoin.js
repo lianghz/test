@@ -22,6 +22,7 @@ var contractSchema = mongoose.Schema();
 var standardSchema = mongoose.Schema();
 var versionResultSchema = mongoose.Schema();
 var versionSchema = mongoose.Schema();
+var packageSchema = mongoose.Schema();
 
 var salesModel = mongoose.model('case6sales', salesSchema, 'case6sales');
 var deliverModel = mongoose.model('case6deliver2', deliverSchema, 'case6delivers');
@@ -30,7 +31,7 @@ var standardModel = mongoose.model('case6standard2', standardSchema, 'case6stand
 var versionResultModel = mongoose.model('case6versionResult2', versionResultSchema, 'case6versionResults');
 var versionModel = mongoose.model('case6version', versionSchema, 'case6versions');
 var outletModel = mongoose.model('case6outlet2', outletSchema, 'case6outlets');//schema关联要放在方法定义后面，否则使用的时候找不到方法。
-
+var packageModel = mongoose.model('case6package2', versionSchema, 'case6packages');
 
 
 var startPeriod = '';
@@ -126,6 +127,7 @@ function getCalcResultDate(req, res, dataType, cb) {
     var delivers;
     var contracts;
     var standards;
+    // var packages;
     var asyncFunc = {
         getMainOutlets: function (asycb, results) {//获取考核销量售点
             outletModel.find(condition, function (err, docs) {
@@ -141,6 +143,13 @@ function getCalcResultDate(req, res, dataType, cb) {
 
             });
         }],
+        // getPackages: ['getMainOutlets', function (asycb, results) {
+        //     packageModel.find({}, function (err, docs) {
+        //         packages = docs;
+        //         asycb();
+
+        //     });
+        // }],
         getSales: ['getMainOutlets', function (asycb, results) {
             salesModel.find({ '周期': period2, 'MM售点': { $in: mainOutlets } }, function (err, docs) {
                 sales = docs
@@ -149,18 +158,18 @@ function getCalcResultDate(req, res, dataType, cb) {
         }],
         getDelivers: ['getMainOutlets', function (asycb, results) {
             deliverModel.find({ '周期': period2, 'MM售点': { $in: mainOutlets } }, function (err, docs) {
-                 delivers = docs
+                delivers = docs
                 asycb();
             });
-        }],        
+        }],
         getContracts: ['getMainOutlets', function (asycb, results) {
             contractModel.find({ 'MM售点': { $in: mainOutlets } }, function (err, docs) {
                 contracts = docs;
                 asycb();
             });
         }],
-        getResults: ['getSales', 'getDelivers','getContracts', 'getStandards', function (asycb, results) {
-            var docs = getCalcResultViewModel(outlets, sales,delivers, contracts, standards, period, period2);
+        getResults: ['getSales', 'getDelivers', 'getContracts', 'getStandards', function (asycb, results) {
+            var docs = getCalcResultViewModel(outlets, sales, delivers, contracts, standards, period, period2);
             cb(docs);
         }],
 
@@ -170,47 +179,97 @@ function getCalcResultDate(req, res, dataType, cb) {
 
 ////////////////////////////////
 
-function getCalcResultViewModel(outlets, sales,delivers, contracts, standards, period, period2) {
+function getCalcResultViewModel(outlets, sales, delivers, contracts, standards, period, period2) {
     var results = [];
     outlets = toJson(outlets);
+    // packages=toJson(packages);
     sales = toJson(sales);
     contracts = toJson(contracts);
     standards = toJson(standards);
     delivers = toJson(delivers);
 
+
     _.map(outlets, function (item) {
         var outletCondition = eval("(" + JSON.stringify(_.pick(item, 'MM售点')) + ")");
         var standardCondition = eval("(" + JSON.stringify(_.pick(item, 'BU', '渠道')) + ")");
         var sale = _.where(sales, outletCondition);
-        var deliver = _.where(delivers, outletCondition);
+        sale = getSalesByPackage(sale, item['类型']);
+        var deliver = _.where(delivers, outletCondition)[0]
+        deliver = deliver?deliver["配送量"]:0.0;
+        // deliver = getDeliverByPackage(packages, deliver, item['类型']);
         var contract = _.where(contracts, outletCondition);
         var standard = _.where(standards, standardCondition);
         var discount = toJson("{'销售折扣合计':''}");
         var type = '一次性';
-        var outlet = _.extend(item,sale[0],deliver[0], contract[0], standard[0], discount,item);
+        var outlet = _.extend(item, sale, deliver, contract[0], standard[0], discount, item);
         if (outlet['类型'] == '一次性') {
             type = '一次性折扣/PC';
         } else if (outlet['类型'] == 'RB') {
             type = 'RB折扣/PC';
         }
-        outlet['进货量'] =outlet['销量'];
-        outlet['标准'] =outlet[type];
-        outlet['是否签署合同'] =outlet['合同是否合格（Y/N)'];
-        if(outlet['是否签署合同']=='Y'){
-            outlet['销售折扣合计'] = outlet['销量']?(parseFloat(outlet['销量']) * parseFloat(outlet['标准'])).toFixed(2):0.00;
-            if(outlet['启动周期']>period2 && outlet['配送量']<=0)
-            {
+        outlet['进货量'] = outlet['销量'];
+        outlet['标准'] = outlet[type];
+        outlet['是否签署合同'] = outlet['合同是否合格（Y/N)'];
+        if (outlet['是否签署合同'] == 'Y') {
+            outlet['销售折扣合计'] = outlet['销量'] ? (parseFloat(outlet['销量']) * parseFloat(outlet['标准'])).toFixed(2) : 0.00;
+            if (outlet['启动周期'] > period2 && outlet['配送量'] <= 0) {
                 outlet['销售折扣合计'] = 0;
-                outlet['备注'] ='无配送量';
+                outlet['备注'] = '无配送量';
             }
         }
 
         // console.log('outletCondition=' + JSON.stringify(outlet));
-        
+
         results.push(outlet);
     })
     return results;
 }
+
+function getSalesByPackage(sales, type) {
+    // console.log('sales='+JSON.stringify(sales));
+    var salesSum = 0.0;
+    var condition = '{"包装":"' + type + '"}';
+    condition = eval("(" + condition + ")");
+    var sales = _.where(sales, condition)[0];
+    return { '销量': sales?parseFloat(sales['销量']):0.0 };
+}
+
+
+// function getSalesByPackage(packages,sales,type){
+//     // var salesSum = toJson("{'销量':0}");
+//     var salesSum = 0.0;
+//     _.map(sales,function(item){
+//     //    var condition =  eval("({'产品代码':" + item['产品代码']+"})")
+//     var condition =  '{"产品代码":' + item['产品代码']+"}";
+//     // condition = toJson(condition);
+//     condition = eval("("+condition+")");
+//     // condition = eval(condition);
+//     // console.log('condition='+condition)
+//        var package = _.where(packages, {"产品代码":item['产品代码']})[0];
+//        package = package?package['包装']:''; 
+//     if(package == type)
+//         salesSum = salesSum + parseFloat(item['销量']);
+//     })
+//     return {'销量':salesSum}
+// }
+
+// function getDeliverByPackage(packages, deliver, type) {
+//     // var salesSum = toJson("{'销量':0}");
+//     var salesSum = 0.0;
+//     _.map(deliver, function (item) {
+//         //    var condition =  eval("({'产品代码':" + item['产品代码']+"})")
+//         var condition = '{"产品代码":' + item['产品代码'] + "}";
+//         // condition = toJson(condition);
+//         condition = eval("(" + condition + ")");
+//         // condition = eval(condition);
+//         // console.log('condition='+condition)
+//         var package = _.where(packages, { "产品代码": item['产品代码'] })[0];
+//         package = package ? package['包装'] : '';
+//         if (package == type)
+//             salesSum = salesSum + parseFloat(item['配送量']);
+//     })
+//     return { '配送量': salesSum }
+// }
 
 function savecase6Version(req, res, cb) {
     var period = req.body.period;

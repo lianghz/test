@@ -64,7 +64,7 @@ function getResultGrid(res) {
     params.paramDb("agreements", "checkResultGrid", function (result) {
         //console.log("result=" + result);
         var now = new Date();
-        res.render('case1checkresult', { layout: null, params: result });
+        res.render('case1/checkresult', { layout: null, params: result });
     });
 }
 

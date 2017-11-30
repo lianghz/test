@@ -39,8 +39,8 @@ function saveData(docs) {
             }
             // console.log('data1='+doc);
             return Q.Promise(function (resolve, reject) {
-                dataModel.remove({ 'MM售点': doc['MM售点'] }, function () {
-                    dataModel.update({ 'MM售点': doc['MM售点'] },
+                dataModel.remove({ 'MM售点': doc['MM售点'],'类型': doc['类型'] }, function () {
+                    dataModel.update({ 'MM售点': doc['MM售点'],'类型': doc['类型'] },
                         doc,
                         { upsert: true },
                         function (err, docs) {

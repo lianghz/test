@@ -34,7 +34,7 @@ function saveData(docs) {
             }
             // console.log('data1='+doc);
             dataModel.remove({ 'MM售点': doc['MM售点'], '周期': doc['周期'] }, function () {
-                dataModel.update({ 'MM售点': doc['MM售点'], '周期': doc['周期'] },
+                dataModel.update({ 'MM售点': doc['MM售点'], '周期': doc['周期']},
                     doc,
                     { upsert: true },
                     function (err, docs) {
