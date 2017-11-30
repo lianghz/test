@@ -6,6 +6,6 @@ module.exports = function (app) {
             st = "2";
         }
         var st = "1"
-        console.log("st=" + st1s)
+        console.log("st=" + st)
     });
 }
